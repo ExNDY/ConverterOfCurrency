@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Conv3rter</string>
+    <string name="_1">1</string>
+    <string name="_2">2</string>
+    <string name="_3">3</string>
+    <string name="_4">4</string>
+    <string name="_5">5</string>
+    <string name="_6">6</string>
+    <string name="_7">7</string>
+    <string name="_8">8</string>
+    <string name="_9">9</string>
+    <string name="dot">.</string>
+    <string name="_0">0</string>
+    <string name="del">Del</string>
+    <string name="namevalute">NAMEVALUTE</string>
+    <string name="codevalute">CODEVALUTE</string>
+    <string name="value">VALUE</string>
+    <string name="status_app">appstatus</string>
+    <string name="dot_in_line">Точка уже есть</string>
+    <string name="lastupdate">Последнее обновление: </string>
+    <string name="code">КОД</string>
+    <string name="currentValue">Сегодня</string>
+    <string name="previousValue">Вчера</string>
+</resources>

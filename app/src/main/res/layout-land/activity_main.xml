@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    tools:context=".MainActivity">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/colorPrimary"
+        style="@style/Widget.MaterialComponents.Toolbar"
+        android:elevation="16dp"
+        android:visibility="visible"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <TextView
+                android:id="@+id/appnameTextView"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_margin="0dp"
+                android:text="@string/app_name"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/toolbar_TextColor"
+                />
+            <ImageButton
+                android:id="@+id/updateImageButton"
+                android:background="@drawable/ripple_effect"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="0dp"
+                android:src="@drawable/ic_update"/>
+        </RelativeLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingBottom="3dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:orientation="horizontal"
+                android:gravity="center_horizontal"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/code"
+                    android:layout_width="115dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:text="@string/code"
+                    android:inputType="text"/>
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/cardview_dark_background"/>
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_weight="3"
+                    android:id="@+id/valuevalute"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:textStyle="normal"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:text="@string/currentValue"
+                    android:inputType="text"/>
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/cardview_dark_background"/>
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_weight="3"
+                    android:id="@+id/previousvalue"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:textStyle="normal"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:text="@string/previousValue"
+                    android:inputType="text"/>
+            </LinearLayout>
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/pullToRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                >
+                <ListView
+                    android:id="@+id/valuteListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="2"
+                >
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal">
+                    <Spinner
+                        android:id="@+id/spinnerFrom"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        />
+                    <EditText
+                        android:id="@+id/valueFrom"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_1"
+                        android:digits="1234567890."
+                        android:focusableInTouchMode="true"
+                        android:background="@android:color/transparent"
+                        android:textAlignment="center"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:textIsSelectable="true"
+                        android:cursorVisible="true"
+                        android:focusable="false"
+                        android:inputType="textMultiLine"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true"
+
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+                    <FrameLayout
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:background="?android:attr/selectableItemBackground"/>
+                    <ImageButton
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:id="@+id/switchFromToButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_icon_switch"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal">
+                    <Spinner
+                        android:id="@+id/spinnerTo"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:longClickable="false"
+                        android:clickable="false"
+                        />
+                    <EditText
+                        android:id="@+id/valueTo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_2"
+                        android:digits="1234567890."
+                        android:background="@android:color/transparent"
+                        android:textAlignment="center"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:enabled="false"
+                        android:textIsSelectable="true"
+                        android:cursorVisible="false"
+                        android:focusableInTouchMode="true"
+                        android:focusable="false"
+                        android:inputType="textMultiLine"
+                        android:maxLines="1"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <TableLayout
+            android:id="@+id/numPad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:shrinkColumns="*"
+            android:stretchColumns="*"
+            android:weightSum="4"
+            >
+
+            <TableRow
+                android:layout_height="match_parent" android:layout_weight="1"
+                >
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_1"
+                    />
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_2" />
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_3" />
+            </TableRow>
+
+            <TableRow
+                android:layout_height="match_parent" android:layout_weight="1"
+                >
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_4" />
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_5" />
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button6"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_6" />
+            </TableRow>
+
+            <TableRow
+                android:layout_height="match_parent" android:layout_weight="1"
+                >
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button7"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_7" />
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button8"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_8" />
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button9"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_9" />
+            </TableRow>
+
+            <TableRow
+                android:layout_height="match_parent" android:layout_weight="1"
+                >
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/buttonDot"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/dot"
+                    android:textStyle="bold"/>
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/button0"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/_0" />
+
+                <Button
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textSize="24sp"
+                    android:id="@+id/buttonDel"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/del" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+    </LinearLayout>
+
+
+
