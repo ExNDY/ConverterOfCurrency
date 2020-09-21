@@ -22,4 +22,5 @@
     <string name="code">КОД</string>
     <string name="currentValue">Сегодня</string>
     <string name="previousValue">Вчера</string>
+    <string name="nominal">за</string>
 </resources>

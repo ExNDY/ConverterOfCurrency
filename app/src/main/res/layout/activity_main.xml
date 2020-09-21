@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@color/backgroundColor"
     tools:context=".MainActivity">
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -20,7 +20,6 @@
             android:layout_height="match_parent"
             >
             <TextView
-                android:id="@+id/app_name"
                 android:gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -42,56 +41,15 @@
         </RelativeLayout>
 
     </com.google.android.material.appbar.MaterialToolbar>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        >
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/code"
-            android:layout_width="130dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:textSize="24sp"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="@string/code"
-            android:inputType="text"/>
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@color/cardview_dark_background"/>
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_weight="3"
-            android:id="@+id/valuevalute"
-            android:layout_width="150dp"
-            android:layout_height="match_parent"
-            android:textStyle="normal"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:text="@string/currentValue"
-            android:inputType="text"/>
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@color/cardview_dark_background"/>
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_weight="3"
-            android:id="@+id/previousvalue"
-            android:layout_width="150dp"
-            android:layout_height="match_parent"
-            android:textStyle="normal"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:text="@string/previousValue"
-            android:inputType="text"/>
-    </LinearLayout>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/pullToRefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
+        android:layout_margin="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/list_layout_bg"
         >
         <ListView
             android:id="@+id/valuteListView"
@@ -100,8 +58,12 @@
             android:layout_weight="9"
             />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/halfround_element"/>
     <LinearLayout
+        android:background="@color/currencyListColor"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -112,13 +74,12 @@
             android:layout_height="match_parent"
             />
         <EditText
-
             android:id="@+id/valueFrom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="1"
             android:digits="1234567890."
-            android:focusableInTouchMode="true"
+            android:focusableInTouchMode="false"
             android:background="@android:color/transparent"
             android:textAlignment="center"
             android:textSize="40sp"
@@ -126,9 +87,15 @@
             android:textIsSelectable="true"
             android:cursorVisible="true"
             android:focusable="false"
+            android:lines="1"
+            android:scrollbars="horizontal"
+            android:scrollHorizontally="true"
+            android:ellipsize="end"
+            android:singleLine="true"
             />
     </LinearLayout>
     <LinearLayout
+        android:background="@color/currencyListColor"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -147,6 +114,7 @@
             />
     </LinearLayout>
     <LinearLayout
+        android:background="@color/currencyListColor"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -169,14 +137,19 @@
             android:textSize="40sp"
             android:textStyle="bold"
             android:textColor="@color/colorPrimary"
-            android:enabled="false"
             android:textIsSelectable="true"
-            android:cursorVisible="false"
-            android:focusableInTouchMode="true"
-            android:focusable="false"/>
+
+            android:focusable="false"
+            android:lines="1"
+            android:scrollbars="horizontal"
+
+            android:scrollHorizontally="true"
+            android:ellipsize="end"
+            android:singleLine="true"/>
     </LinearLayout>
 
     <TableLayout
+        android:background="@color/currencyListColor"
         android:id="@+id/numPad"
         android:layout_width="match_parent"
         android:layout_height="0dp"
