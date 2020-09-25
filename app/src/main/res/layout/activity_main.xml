@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/backgroundColor"
     tools:context=".MainActivity">
@@ -14,16 +15,26 @@
         style="@style/Widget.MaterialComponents.Toolbar"
         android:elevation="16dp"
         android:visibility="visible"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
         >
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/dayNightSwitcher"
+                android:contentDescription="@string/daynight_theme_switcher"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_alignParentStart="true"
+                android:layout_margin="0dp"
+                />
             <TextView
                 android:gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
+                android:layout_centerInParent="true"
                 android:layout_margin="0dp"
                 android:text="@string/app_name"
                 android:textSize="24sp"
@@ -58,96 +69,108 @@
             android:layout_weight="9"
             />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/list_layout_bg">
+
+        <LinearLayout
+            android:background="@color/currencyListColor"
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal">
+            <Spinner
+                android:id="@+id/spinnerFrom"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                />
+            <EditText
+                android:id="@+id/valueFrom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="1"
+                android:digits="1234567890."
+                android:focusableInTouchMode="false"
+                android:background="@drawable/ripple_effect"
+                android:textAlignment="center"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:textIsSelectable="true"
+                android:cursorVisible="true"
+                android:focusable="false"
+                android:lines="1"
+                android:scrollbars="horizontal"
+                android:scrollHorizontally="true"
+                android:ellipsize="end"
+                android:singleLine="true"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:background="@color/currencyListColor"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"/>
+            <ImageButton
+                style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                android:background="?android:attr/selectableItemBackground"
+                android:id="@+id/switchFromToButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_icon_switch"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:background="@color/currencyListColor"
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal">
+            <Spinner
+                android:id="@+id/spinnerTo"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:longClickable="false"
+                android:clickable="false"
+                />
+            <EditText
+                android:id="@+id/valueTo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text=""
+                android:digits="1234567890."
+                android:background="@android:color/transparent"
+                android:textAlignment="center"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:textIsSelectable="true"
+
+                android:focusable="false"
+                android:lines="1"
+                android:scrollbars="horizontal"
+
+                android:scrollHorizontally="true"
+                android:ellipsize="end"
+                android:singleLine="true"/>
+        </LinearLayout>
+    </LinearLayout>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:background="@drawable/halfround_element"/>
-    <LinearLayout
-        android:background="@color/currencyListColor"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal">
-        <Spinner
-            android:id="@+id/spinnerFrom"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            />
-        <EditText
-            android:id="@+id/valueFrom"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="1"
-            android:digits="1234567890."
-            android:focusableInTouchMode="false"
-            android:background="@android:color/transparent"
-            android:textAlignment="center"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            android:textIsSelectable="true"
-            android:cursorVisible="true"
-            android:focusable="false"
-            android:lines="1"
-            android:scrollbars="horizontal"
-            android:scrollHorizontally="true"
-            android:ellipsize="end"
-            android:singleLine="true"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:background="@color/currencyListColor"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <FrameLayout
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:background="?android:attr/selectableItemBackground"/>
-        <ImageButton
-            style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-            android:background="?android:attr/selectableItemBackground"
-            android:id="@+id/switchFromToButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_icon_switch"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:background="@color/currencyListColor"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal">
-        <Spinner
-            android:id="@+id/spinnerTo"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:longClickable="false"
-            android:clickable="false"
-            />
-        <EditText
-            android:id="@+id/valueTo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text=""
-            android:digits="1234567890."
-            android:background="@android:color/transparent"
-            android:textAlignment="center"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimary"
-            android:textIsSelectable="true"
-
-            android:focusable="false"
-            android:lines="1"
-            android:scrollbars="horizontal"
-
-            android:scrollHorizontally="true"
-            android:ellipsize="end"
-            android:singleLine="true"/>
-    </LinearLayout>
-
     <TableLayout
         android:background="@color/currencyListColor"
         android:id="@+id/numPad"
@@ -155,7 +178,7 @@
         android:layout_height="0dp"
         android:shrinkColumns="*"
         android:stretchColumns="*"
-        android:layout_weight="3"
+        android:layout_weight="4"
         >
 
         <TableRow
