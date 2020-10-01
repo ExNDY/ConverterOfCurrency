@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SplashScreenActivity"
-    android:background="@drawable/splashscreen_bg">
+    tools:context=".app.SplashScreenActivity">
+    <FrameLayout
+        android:layout_weight="30"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
     <ProgressBar
+        android:layout_weight="2"
         android:id="@+id/progress_circular"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="150dp"
+       android:layout_gravity="center_horizontal"
         android:visibility="invisible"
         android:indeterminate="true"
-
         />
     <TextView
+        android:layout_weight="2"
         android:id="@+id/textSplashScreen_statusApp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
         android:layout_marginBottom="50dp"
         android:text=""
         android:textColor="@color/design_default_color_surface"
@@ -32,4 +32,4 @@
         android:textStyle="bold"
         android:textAllCaps="true"/>
 
-</RelativeLayout>
+</LinearLayout>

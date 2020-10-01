@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="stateHidden">
-        <activity android:name=".SplashScreenActivity"
+        <activity android:name=".app.SplashScreenActivity"
             android:noHistory="true"
             android:theme="@style/SplashScreenTheme"
             >
@@ -22,10 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"/>
-        <receiver android:name=".NetworkChangeReciever">
-
-        </receiver>
+        <activity android:name=".app.MainActivity"/>
     </application>
 
 </manifest>

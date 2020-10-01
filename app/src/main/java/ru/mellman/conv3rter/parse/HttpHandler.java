@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter;
+package ru.mellman.conv3rter.parse;
 
 import android.util.Log;
 

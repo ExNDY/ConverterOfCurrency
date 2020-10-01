@@ -1,19 +1,17 @@
-package ru.mellman.conv3rter;
-import android.app.Activity;
+package ru.mellman.conv3rter.data_adapters;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.textview.MaterialTextView;
 import java.util.ArrayList;
-import java.util.List;
+
+import ru.mellman.conv3rter.R;
 
 public class CurrencyRateAdapter extends ArrayAdapter<CurrencyRate> {
 

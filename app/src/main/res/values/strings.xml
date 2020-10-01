@@ -2,6 +2,8 @@
     <string name="app_name">Conv3rter</string>
     <string name="json_str">https://www.cbr-xml-daily.ru/daily_json.js</string>
     <string name="json_rates">https://www.cbr-xml-daily.ru/latest.js</string>
+    <string name="first_start_error">Internet connection is required for the first launch of the application</string>
+    <string name="database_error">The database is empty. Internet connection required.</string>
     <string name="_1">1</string>
     <string name="_2">2</string>
     <string name="_3">3</string>

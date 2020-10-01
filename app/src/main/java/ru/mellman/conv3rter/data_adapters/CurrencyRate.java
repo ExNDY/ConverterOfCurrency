@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter;
+package ru.mellman.conv3rter.data_adapters;
 import android.os.Parcel;
 import android.os.Parcelable;
 

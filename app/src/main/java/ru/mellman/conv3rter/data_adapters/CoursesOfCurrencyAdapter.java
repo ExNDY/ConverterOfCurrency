@@ -1,8 +1,7 @@
-package ru.mellman.conv3rter;
+package ru.mellman.conv3rter.data_adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,8 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import ru.mellman.conv3rter.R;
 
 public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
     Context context;
@@ -44,7 +45,7 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
             holder.currentValue = row.findViewById(R.id.valuevalute);
             holder.difValue = row.findViewById(R.id.difvalue);
             holder.nominal = row.findViewById(R.id.nominalvalute);
-            holder.diffenitionImage = row.findViewById(R.id.difImage);
+            holder.differenceImage = row.findViewById(R.id.difImage);
             row.setTag(holder);
         }
         else{
@@ -55,14 +56,14 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
         holder.currencyName.setText(c.getName());
         String currentValueStr = String.valueOf(c.getCourseValue())+"₽";
         holder.currentValue.setText(currentValueStr);
-        double dif = c.getCourseValue() - c.getPrevious();
+        double dif = c.getDifference();
         if (dif>0){
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseGREEN));
-            holder.diffenitionImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_up));
+            holder.differenceImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_up));
         }
         if (dif<0){
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseRED));
-            holder.diffenitionImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_down));
+            holder.differenceImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_down));
         }
         if (dif==0.0){
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseGREY));
@@ -80,7 +81,7 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
         MaterialTextView currentValue;
         MaterialTextView difValue;
         MaterialTextView nominal;
-        ImageView diffenitionImage;
+        ImageView differenceImage;
 
     }
 

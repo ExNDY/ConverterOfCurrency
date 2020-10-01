@@ -1,21 +1,21 @@
-package ru.mellman.conv3rter;
+package ru.mellman.conv3rter.data_adapters;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class CoursesOfCurrency implements Parcelable {
+public class CoursesOfCurrency implements Parcelable{
 
     private String charCode;
     private String name;
     private int nominal;
     private Double courseValue;
-    private Double previous;
+    private Double previousValue;
     {
         charCode = "---";
         name = "Undefined";
         nominal = 0;
         courseValue = 0.0;
-        previous = 0.0;
+        previousValue = 0.0;
     }
     public CoursesOfCurrency(){
 
@@ -27,7 +27,7 @@ public class CoursesOfCurrency implements Parcelable {
         this.name = name;
         this.nominal = nominal;
         this.courseValue = value;
-        this.previous = previous;
+        this.previousValue = previous;
     }
 
     protected CoursesOfCurrency(Parcel in){
@@ -35,7 +35,7 @@ public class CoursesOfCurrency implements Parcelable {
         name = in.readString();
         nominal = in.readInt();
         courseValue = in.readDouble();
-        previous = in.readDouble();
+        previousValue = in.readDouble();
     }
 
     public static final Creator<CoursesOfCurrency> CREATOR = new Creator<CoursesOfCurrency>() {
@@ -74,17 +74,15 @@ public class CoursesOfCurrency implements Parcelable {
     public void setCourseValue(Double courseValue){
         this.courseValue = courseValue;
     }
-    public Double getPrevious(){
-        return previous;
+    public Double getPreviousValue(){
+        return previousValue;
     }
-    public void setPrevious(Double previous){
-        this.previous = previous;
+    public void setPreviousValue(Double previousValue){
+        this.previousValue = previousValue;
     }
-    public Double getCourseByCurrentCurrency(Double valueMoney){
-        valueMoney = valueMoney/(this.courseValue/this.nominal);
-        return valueMoney;
+    public Double getDifference(){
+        return courseValue-previousValue;
     }
-
 
     @Override
     public int describeContents() {
@@ -97,6 +95,6 @@ public class CoursesOfCurrency implements Parcelable {
         dest.writeString(name);
         dest.writeInt(nominal);
         dest.writeDouble(courseValue);
-        dest.writeDouble(previous);
+        dest.writeDouble(previousValue);
     }
 }

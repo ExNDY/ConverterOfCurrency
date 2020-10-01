@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/backgroundColor"
-    tools:context=".MainActivity">
+    tools:context=".app.MainActivity">
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -67,6 +67,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9"
+            android:divider="@color/colorDivider"
+            android:dividerHeight="1dp"
+            android:footerDividersEnabled="true"
             />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -90,12 +93,14 @@
                 android:id="@+id/spinnerFrom"
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
                 />
             <EditText
                 android:id="@+id/valueFrom"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="1"
+                android:textColor="@color/textColor"
                 android:digits="1234567890."
                 android:focusableInTouchMode="false"
                 android:background="@drawable/ripple_effect"
@@ -141,8 +146,6 @@
                 android:id="@+id/spinnerTo"
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
-                android:longClickable="false"
-                android:clickable="false"
                 />
             <EditText
                 android:id="@+id/valueTo"
@@ -193,6 +196,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/_1"
+                android:textColor="@color/colorPrimary"
                 />
 
             <Button
@@ -202,7 +206,8 @@
                 android:id="@+id/button2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_2" />
+                android:text="@string/_2"
+                android:textColor="@color/colorPrimary"/>
 
             <Button
                 style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
@@ -211,7 +216,8 @@
                 android:id="@+id/button3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_3" />
+                android:text="@string/_3"
+                android:textColor="@color/colorPrimary"/>
         </TableRow>
 
         <TableRow
@@ -225,7 +231,8 @@
                 android:id="@+id/button4"
                                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_4" />
+                android:text="@string/_4"
+                android:textColor="@color/colorPrimary"/>
 
             <Button
                 style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
@@ -234,7 +241,8 @@
                 android:id="@+id/button5"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_5" />
+                android:text="@string/_5"
+                android:textColor="@color/colorPrimary"/>
 
             <Button
                 style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
@@ -243,7 +251,8 @@
                 android:id="@+id/button6"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_6" />
+                android:text="@string/_6"
+                android:textColor="@color/colorPrimary"/>
         </TableRow>
 
         <TableRow
@@ -257,7 +266,8 @@
                 android:id="@+id/button7"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_7" />
+                android:text="@string/_7"
+                android:textColor="@color/colorPrimary"/>
 
             <Button
                 style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
@@ -266,7 +276,8 @@
                 android:id="@+id/button8"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_8" />
+                android:text="@string/_8"
+                android:textColor="@color/colorPrimary"/>
 
             <Button
                 style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
@@ -275,7 +286,8 @@
                 android:id="@+id/button9"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_9" />
+                android:text="@string/_9"
+                android:textColor="@color/colorPrimary"/>
         </TableRow>
 
         <TableRow android:layout_height="match_parent" android:layout_weight="1">
@@ -288,7 +300,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/dot"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"/>
             <Button
                 style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                 android:background="?android:attr/selectableItemBackground"
@@ -296,7 +309,8 @@
                 android:id="@+id/button0"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/_0" />
+                android:text="@string/_0"
+                android:textColor="@color/colorPrimary"/>
             <Button
                 style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                 android:background="?android:attr/selectableItemBackground"
@@ -304,7 +318,8 @@
                 android:id="@+id/buttonDel"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@string/del" />
+                android:text="@string/del"
+                android:textColor="@color/colorPrimary"/>
         </TableRow>
     </TableLayout>
 </LinearLayout>
