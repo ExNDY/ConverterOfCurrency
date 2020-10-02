@@ -10,12 +10,14 @@ final public class DataObject {
     private ArrayList<CurrencyRate> ratesList;
     private String jsonObjectCourses;
     private String jsonObjectRates;
+    private String dateUpdate;
 
-    public DataObject(ArrayList<CoursesOfCurrency> coursesList, ArrayList<CurrencyRate> ratesList, String jsonObjectCourses, String jsonObjectRates){
+    public DataObject(ArrayList<CoursesOfCurrency> coursesList, ArrayList<CurrencyRate> ratesList, String jsonObjectCourses, String jsonObjectRates, String dateUpdate){
         this.coursesList = coursesList;
         this.ratesList = ratesList;
         this.jsonObjectCourses = jsonObjectCourses;
         this.jsonObjectRates = jsonObjectRates;
+        this.dateUpdate = dateUpdate;
     }
     public ArrayList<CoursesOfCurrency> getCoursesList(){
         return coursesList;
@@ -30,4 +32,7 @@ final public class DataObject {
         return jsonObjectRates;
     }
 
+    public String getDateUpdate() {
+        return dateUpdate;
+    }
 }

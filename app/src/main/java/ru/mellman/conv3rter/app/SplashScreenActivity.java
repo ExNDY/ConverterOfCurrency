@@ -5,106 +5,110 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
-import ru.mellman.conv3rter.DataObject;
-import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.DataTasks;
-import ru.mellman.conv3rter.R;
+import ru.mellman.conv3rter.Function;
+import ru.mellman.conv3rter.NetworkChangeReceiver;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
 import ru.mellman.conv3rter.data_adapters.CurrencyRate;
+import ru.mellman.conv3rter.DataObject;
+import ru.mellman.conv3rter.R;
 
-public class SplashScreenActivity extends AppCompatActivity {
+public class SplashScreenActivity extends AppCompatActivity implements NetworkChangeReceiver.NetworkChangeReceiverListener {
     public static final String PREF = "converterPreferences";
     public static final String JSON_COURSES = "JSON_Courses";
     public static final String JSON_RATES = "JSON_Rates";
     public static final String FIRST_START = "firstStart";
-    private String TAG = MainActivity.class.getSimpleName();
-    ProgressBar progressBar;
+    public static final String LAST_UPDATE_DATETIME = "lastUpdate";
     ArrayList<CoursesOfCurrency> courseList;
     ArrayList<CurrencyRate> currencyRateList;
     TextView statusApp;
+    private NetworkChangeReceiver networkChangeReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        networkChangeReceiver = new NetworkChangeReceiver(this);
         if (sharedPreferences.getBoolean("DayNight_Mode", false)){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
         else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
+        boolean need = Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        progressBar = findViewById(R.id.progress_circular);
         statusApp = findViewById(R.id.textSplashScreen_statusApp);
-        progressBar.setVisibility(View.VISIBLE);
-        try {
-            String d = Function.getDateTimeCourseLastUpdate();
-        } catch (ParseException e) {
-            e.printStackTrace();
+    }
+    @Override
+    protected void onStart(){
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, filter);
+    }
+    @Override
+    protected void onStop(){
+        super.onStop();
+        //unregisterReceiver(networkChangeReceiver);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        unregisterReceiver(networkChangeReceiver);
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, filter);
+    }
+
+    @Override
+    public void isNetworkOffline() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        if (sharedPreferences.getBoolean(FIRST_START,true)){
+            statusApp.setText(R.string.first_start_error);
         }
-        if (sharedPreferences.getBoolean(FIRST_START,true) && isOnline(getApplicationContext())){
-            firstLaunch(sharedPreferences);
+        else{
+            if(!sharedPreferences.getString(JSON_COURSES, "").equals("") && !sharedPreferences.getString(JSON_RATES, "").equals("")){
+                loadData();
+                start();
+            }
+            else {
+                Toast.makeText(this, R.string.database_error, Toast.LENGTH_LONG).show();
+                statusApp.setText(R.string.database_error);
+            }
+        }
+    }
+
+    @Override
+    public void isNetworkOnline() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        if(sharedPreferences.getBoolean(FIRST_START,true)){
             downloadData();
+            firstLaunch(sharedPreferences);
         }
-        else
-        {
-            if(sharedPreferences.getString(JSON_COURSES, "").equals("") || sharedPreferences.getString(JSON_RATES, "").equals("")){
+        else {
+            if(Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME,"")) || sharedPreferences.getString(JSON_COURSES, "").equals("") || sharedPreferences.getString(JSON_RATES, "").equals("")){
                 downloadData();
             }
             else {
                 loadData();
             }
         }
-        progressBar.setVisibility(View.INVISIBLE);
         start();
-        //run(sharedPreferences, getApplicationContext());
     }
-/*
-    private void run(SharedPreferences sharedPreferences, Context context){
-        String jSONStr = sharedPreferences.getString(JSON_COURSES,"");
-        boolean firstStart = sharedPreferences.getBoolean(FIRST_START,true);
-        boolean hasInternet = isOnline(this);
-        date = Function.getDateNow();
-        if(firstStart){
-            firstLaunch(sharedPreferences);
-            if (hasInternet){
-                statusApp.setText("");
-                new GetValute().execute();
-            }
-            else{
-                statusApp.setText(R.string.first_start_error);
-            }
-        }
-        else {
-            if(jSONStr.length()==0) {
-                if (!hasInternet){
-                    statusApp.setText(R.string.database_error);
-                }
-                else {
 
-                    new GetValute().execute();
-                }
-            }
-            else
-            {
-                new GetValute().execute();
-            }
-        }
-    }
-*/
     private void start(){
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -139,6 +143,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             SharedPreferences.Editor ed = sharedPreferences.edit();
             ed.putString(JSON_COURSES, jsonCourses);
             ed.putString(JSON_RATES,jsonRates);
+            ed.putString(LAST_UPDATE_DATETIME, data.getDateUpdate());
             ed.apply();
         } catch (InterruptedException | TimeoutException e) {
             e.printStackTrace();
@@ -153,30 +158,5 @@ public class SplashScreenActivity extends AppCompatActivity {
         } catch (InterruptedException | TimeoutException e) {
             e.printStackTrace();
         }
-    }
-
-
-
-
-
-    //Check InternetConncection WIFI, MOBILE
-    private static boolean isOnline(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-            if (capabilities != null) {
-                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR");
-                    return true;
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI");
-                    return true;
-                }  else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)){
-                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET");
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

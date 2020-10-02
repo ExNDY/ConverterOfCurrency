@@ -9,11 +9,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -30,27 +28,28 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
 
+import ru.mellman.conv3rter.DataObject;
+import ru.mellman.conv3rter.DataTasks;
 import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.R;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrencyAdapter;
 import ru.mellman.conv3rter.data_adapters.CurrencyRate;
 import ru.mellman.conv3rter.data_adapters.CurrencyRateAdapter;
-import ru.mellman.conv3rter.parse.HttpHandler;
-import ru.mellman.conv3rter.parse.JSONObjParser;
 
 public class MainActivity extends AppCompatActivity {
     private EditText _txtValueFrom, _txtValueTo;
     private ListView _listOfCurrencyRates;
     private Spinner _spinnerFrom, _spinnerTo;
     private SwitchMaterial _switchThemeMaterial;
+    private ImageButton btnSwitchCurrency;
     private String TAG = MainActivity.class.getSimpleName();
     public static final String PREF = "converterPreferences";
-    public static final String STREAM_JSON = "inputjSONStr";
-    public static final String JSON_RATES = "jSON_Rates";
-    public static final String DATE_NOW = "Date";
-    SharedPreferences sharedPreferences;
+    public static final String JSON_COURSES = "JSON_Courses";
+    public static final String JSON_RATES = "JSON_Rates";
+    public static final String LAST_UPDATE_DATETIME = "lastUpdate";
     private int _selectedPosFrom, _selectedPosTo;
     ArrayList<CoursesOfCurrency> courseList;
     CoursesOfCurrencyAdapter currencyAdapter;
@@ -97,9 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (_txtValueFrom.length()!=0){
-                    calculateCourseBy(_txtValueFrom, _txtValueTo);
-                }
+
+                calculateCourseBy(_txtValueFrom, _txtValueTo);
+
             }
         });
 
@@ -167,10 +166,18 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void calculateCourseBy(EditText editTextFrom, EditText editTextTo){
-        double _val = Double.parseDouble(editTextFrom.getText().toString());
-        _val = Function.convert(currencyRateList.get(_selectedPosFrom).getRate(), currencyRateList.get(_selectedPosTo).getRate(),_val);
+        if(!editTextFrom.getText().toString().equals("")){
+            try {
+                double _val = Double.parseDouble(editTextFrom.getText().toString());
+                _val = Function.convert(currencyRateList.get(_selectedPosFrom).getRate(), currencyRateList.get(_selectedPosTo).getRate(),_val);
+                editTextTo.setText(Function.getDecimalToFormat(_val));
+            }
+            catch (Exception e){
+                editTextTo.setText("ERROR");
+            }
 
-        editTextTo.setText(Function.getDecimalToFormat(_val));
+        }
+
     }
 
     private void initUI(){
@@ -186,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         Button btn0 = findViewById(R.id.button0);
         Button btnDot = findViewById(R.id.buttonDot);
         Button btnDel = findViewById(R.id.buttonDel);
-        ImageButton btnSwitchCurrency = findViewById(R.id.switchFromToButton);
+        btnSwitchCurrency = findViewById(R.id.switchFromToButton);
         _switchThemeMaterial = findViewById(R.id.dayNightSwitcher);
         _spinnerFrom = findViewById(R.id.spinnerFrom);
         _spinnerTo = findViewById(R.id.spinnerTo);
@@ -195,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
         _listOfCurrencyRates = findViewById(R.id.valuteListView);
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
-        ImageButton btnUpdate = findViewById(R.id.updateImageButton);
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -238,9 +244,6 @@ public class MainActivity extends AppCompatActivity {
                 if(v.getId()==R.id.switchFromToButton){
                     SwitchCurrency();
                 }
-                if(v.getId()==R.id.updateImageButton){
-                    new GetValute().execute();
-                }
             }
         };
         btn0.setOnClickListener(listener);
@@ -264,11 +267,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        btnUpdate.setOnClickListener(listener);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new GetValute().execute();
+                SharedPreferences sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
+                checkUpdate(sharedPreferences);
                 pullToRefresh.setRefreshing(false);
             }
         });
@@ -280,17 +283,17 @@ public class MainActivity extends AppCompatActivity {
                 if(!isChecked){
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     ed.putBoolean("DayNight_Mode",false);
-                    ed.apply();
 
                 }
                 else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     ed.putBoolean("DayNight_Mode",true);
-                    ed.apply();
 
                 }
+                ed.apply();
             }
         });
+        _txtValueFrom.setShowSoftInputOnFocus(false);
         SharedPreferences sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
         checkThemeMod(sharedPreferences);
     }
@@ -339,69 +342,25 @@ public class MainActivity extends AppCompatActivity {
         _spinnerTo.setSelection(sharedPreferences.getInt("toPos", 11));
     }
     private void SwitchCurrency( ){
+
+        Animation rotate180_anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate180_anim);
+        btnSwitchCurrency.startAnimation(rotate180_anim);
+
         int posFrom = _spinnerFrom.getSelectedItemPosition();
         int posTo = _spinnerTo.getSelectedItemPosition();
         _spinnerFrom.setSelection(posTo,true);
         _spinnerTo.setSelection(posFrom, true);
-        double val = Double.parseDouble(_txtValueTo.getText().toString());
-        String s = Function.getDecimalToFormat(val);
-        _txtValueTo.setText("");
-        _txtValueFrom.setText(s);
-    }
-
-    public class GetValute extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute(){
-            super.onPreExecute();
-            ImageButton btnUpdate = findViewById(R.id.updateImageButton);
-            Animation rotate_anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anim);
-            btnUpdate.startAnimation(rotate_anim);
-        }
-
-        @Override
-        protected Void doInBackground(Void...arg0) {
-            currencyRateList = getRate();
-            SharedPreferences sharedPreferences;
-            sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
-            String jsonStr;
-            String date = Function.getDateNow();
-            final String lastupdate = sharedPreferences.getString(DATE_NOW,"");
-            if (date.equals(lastupdate)){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), getString(R.string.lastupdate) + lastupdate, Toast.LENGTH_LONG).show();
-                    }
-                });
+        if (_txtValueFrom.length()!=0){
+            try {
+                double val = Double.parseDouble(_txtValueTo.getText().toString());
+                String s = Function.getDecimalToFormat(val);
+                _txtValueTo.setText("");
+                _txtValueFrom.setText(s);
             }
-            else{
-                HttpHandler steamHandler = new HttpHandler();
-                jsonStr = steamHandler.makeServiceCall("https://www.cbr-xml-daily.ru/daily_json.js");
-                //Log.e(TAG, "Response from url: " + jsonStr);
-                if (jsonStr != null) {
-                    sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
-                    SharedPreferences.Editor ed = sharedPreferences.edit();
-                    ed.putString(STREAM_JSON,jsonStr);
-                    ed.putString(DATE_NOW, date);
-                    ed.apply();
-                    courseList = JSONObjParser.parseJSONToCourseList(jsonStr);
-                } else {
-                    Log.e(TAG, "Couldn't get jSON from server.");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Couldn't get json from server. Check LOG", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
+            catch (Exception e){
+                _txtValueTo.setText("ERROR");
             }
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result){
-            super.onPostExecute(result);
-            currencyAdapter.notifyDataSetChanged();
-            currencyRateAdapter.notifyDataSetChanged();
+
         }
     }
     private void checkThemeMod(SharedPreferences sharedPreferences){
@@ -412,44 +371,30 @@ public class MainActivity extends AppCompatActivity {
             _switchThemeMaterial.setChecked(false);
         }
     }
+    private void checkUpdate(SharedPreferences sharedPreferences){
+        if (Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, "")) && Function.isOnline(getApplicationContext())){
+            try {
+                DataObject data = DataTasks.getDataOfCurrency();
+                courseList = data.getCoursesList();
+                currencyRateList = data.getRatesList();
+                String jsonCourses = data.getJsonObjectCourses();
+                String jsonRates = data.getJsonObjectRates();
 
-    private ArrayList<CurrencyRate> getRate() {
-        ArrayList<CurrencyRate> rateList = new ArrayList<CurrencyRate>();
-        SharedPreferences sharedPreferences;
-        sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
-        String jsonRate = sharedPreferences.getString(JSON_RATES, "");
-        boolean jsonStrEmpty = sharedPreferences.getString(JSON_RATES,"").equals("");
-        String date = Function.getDateNow();
-        if (date.equals(sharedPreferences.getString(DATE_NOW,"")) && !jsonStrEmpty){
-            jsonRate=null;
-        }
-        else{
-            HttpHandler steamHandler = new HttpHandler();
-            String path = getString(R.string.json_rates);
-            jsonRate = steamHandler.makeServiceCall(path);
-            //Log.e(TAG, "Response from url: " + jsonRate);
-        }
-        if (jsonRate==null){
-            jsonRate=sharedPreferences.getString(JSON_RATES,"");
-        }
+                SharedPreferences.Editor ed = sharedPreferences.edit();
+                ed.putString(JSON_COURSES, jsonCourses);
+                ed.putString(JSON_RATES,jsonRates);
+                ed.putString(LAST_UPDATE_DATETIME, data.getDateUpdate());
+                ed.apply();
 
-        if (jsonRate != null) {
-            SharedPreferences.Editor ed = sharedPreferences.edit();
-            ed.putString(JSON_RATES,jsonRate);
-            //ed.putString(DATE_NOW, date);
-            ed.apply();
-            rateList = JSONObjParser.parseJSONToRateList(jsonRate);
-        } else {
-            Log.e(TAG, "Couldn't get jSON from server.");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Couldn't get json from server. Check LOG", Toast.LENGTH_LONG).show();
-                }
-            });
+                currencyAdapter.notifyDataSetChanged();
+                currencyRateAdapter.notifyDataSetChanged();
+            } catch (InterruptedException | TimeoutException e) {
+                e.printStackTrace();
+            }
         }
-        return rateList;
+        else {
+            Toast.makeText(getApplicationContext(), "DB is actual", Toast.LENGTH_LONG).show();
+        }
     }
-
 }
 

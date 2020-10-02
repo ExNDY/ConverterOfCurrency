@@ -14,4 +14,5 @@
     <color name="backgroundColor">#cfd8dc</color>
     <color name="colorNominal">#cfd8dc</color>
     <color name="colorDivider">#eeeeee</color>
+    <color name="colorSwitcherCurrency">#fff</color>
 </resources>
