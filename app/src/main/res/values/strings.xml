@@ -28,4 +28,7 @@
     <string name="nominal">for</string>
     <string name="daynight_theme_switcher">DayNight theme switcher</string>
     <string name="switch_currency_description">SwitchCurrencyFromOnTo</string>
+    <string name="dataBaseIsActual">Database is actual</string>
+    <string name="offline">No network connection</string>
+    <string name="online">Connected</string>
 </resources>

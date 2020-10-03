@@ -15,4 +15,7 @@
     <color name="colorNominal">#cfd8dc</color>
     <color name="colorDivider">#eeeeee</color>
     <color name="colorSwitcherCurrency">#fff</color>
+    <color name="colorOfSnackBar">#263238</color>
+    <color name="colorREDForSnackBar">#d32f2f</color>
+    <color name="colorGREENForSnackBar">#388e3c</color>
 </resources>

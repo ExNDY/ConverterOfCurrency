@@ -10,6 +10,9 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 import ru.mellman.conv3rter.DataTasks;
 import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.NetworkChangeReceiver;
+import ru.mellman.conv3rter.Snackbar;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
 import ru.mellman.conv3rter.data_adapters.CurrencyRate;
 import ru.mellman.conv3rter.DataObject;
@@ -44,7 +48,6 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
         else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-        boolean need = Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         statusApp = findViewById(R.id.textSplashScreen_statusApp);
@@ -58,34 +61,34 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
     @Override
     protected void onStop(){
         super.onStop();
-        //unregisterReceiver(networkChangeReceiver);
     }
 
     @Override
     protected void onPause(){
-        super.onPause();
         unregisterReceiver(networkChangeReceiver);
+        super.onPause();
+
     }
     @Override
     protected void onResume(){
         super.onResume();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, filter);
     }
 
     @Override
     public void isNetworkOffline() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
         if (sharedPreferences.getBoolean(FIRST_START,true)){
+            OfflineSnackBar(getResources().getString(R.string.offline));
             statusApp.setText(R.string.first_start_error);
         }
         else{
             if(!sharedPreferences.getString(JSON_COURSES, "").equals("") && !sharedPreferences.getString(JSON_RATES, "").equals("")){
                 loadData();
                 start();
+                unregisterReceiver(networkChangeReceiver);
             }
             else {
-                Toast.makeText(this, R.string.database_error, Toast.LENGTH_LONG).show();
+                OfflineSnackBar(getResources().getString(R.string.offline));
                 statusApp.setText(R.string.database_error);
             }
         }
@@ -100,6 +103,7 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
         }
         else {
             if(Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME,"")) || sharedPreferences.getString(JSON_COURSES, "").equals("") || sharedPreferences.getString(JSON_RATES, "").equals("")){
+
                 downloadData();
             }
             else {
@@ -121,6 +125,23 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
                 finish();
             }
         }, 0);
+    }
+    private void OfflineSnackBar(String message){
+        ViewGroup view = (ViewGroup) findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_INDEFINITE);
+        View snackView = snackbar.getView();
+        snackView.setBackgroundColor(getResources().getColor(R.color.colorREDForSnackBar, getApplicationContext().getTheme()));
+        snackbar.setText(message);
+        snackbar.show();
+    }
+
+    private void OnlineSnackBar(){
+        ViewGroup view = (ViewGroup) findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_INDEFINITE);
+        View snackView = snackbar.getView();
+        snackView.setBackgroundColor(getResources().getColor(R.color.colorGREENForSnackBar, getApplicationContext().getTheme()));
+        snackbar.setText("Online");
+        snackbar.show();
     }
 
     private void firstLaunch(SharedPreferences sharedPreferences){

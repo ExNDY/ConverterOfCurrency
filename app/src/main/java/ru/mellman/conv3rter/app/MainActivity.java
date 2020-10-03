@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -32,8 +34,10 @@ import java.util.concurrent.TimeoutException;
 
 import ru.mellman.conv3rter.DataObject;
 import ru.mellman.conv3rter.DataTasks;
+import ru.mellman.conv3rter.DecimalDigitsInputFilter;
 import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.R;
+import ru.mellman.conv3rter.Snackbar;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrencyAdapter;
 import ru.mellman.conv3rter.data_adapters.CurrencyRate;
@@ -153,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 _selectedPosTo = (int)parent.getItemIdAtPosition(position);
                 saveSpinnerPos(_selectedPosFrom, _selectedPosTo);
                 calculateCourseBy(_txtValueFrom, _txtValueTo);
-                //Toast.makeText(MainActivity.this, "POS: " + " value:" +valueOfCurrentValute, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -294,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         _txtValueFrom.setShowSoftInputOnFocus(false);
+        _txtValueFrom.setFilters(new InputFilter[]{new DecimalDigitsInputFilter()});
         SharedPreferences sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
         checkThemeMod(sharedPreferences);
     }
@@ -316,17 +320,19 @@ public class MainActivity extends AppCompatActivity {
             calculateCourseBy(_txtValueFrom, _txtValueTo);
         }
         else {
-            Toast.makeText(MainActivity.this, getString(R.string.dot_in_line), Toast.LENGTH_LONG).show();
+            SnackBarShow(getString(R.string.dot_in_line));
         }
     }
     private void DelNumber(){
-        if(_txtValueFrom.length()-1==0)
-        {
-            _txtValueFrom.setText("0");
-        }
-        else
-        {
-            _txtValueFrom.setText(_txtValueFrom.getText().delete(_txtValueFrom.getText().length() - 1, _txtValueFrom.getText().length()));
+        if(_txtValueFrom.length()!=0){
+            if(_txtValueFrom.length()-1==0)
+            {
+                _txtValueFrom.setText("0");
+            }
+            else
+            {
+                _txtValueFrom.setText(_txtValueFrom.getText().delete(_txtValueFrom.getText().length() - 1, _txtValueFrom.getText().length()));
+            }
         }
     }
     private void saveSpinnerPos(int selectedPosFrom, int selectedPosTo){
@@ -393,8 +399,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else {
-            Toast.makeText(getApplicationContext(), "DB is actual", Toast.LENGTH_LONG).show();
+            SnackBarShow(getResources().getString(R.string.dataBaseIsActual));
         }
+    }
+    private void SnackBarShow(String message){
+        ViewGroup view = (ViewGroup) findViewById(android.R.id.content);
+        final Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_SHORT);
+        View snackView = snackbar.getView();
+        snackView.setBackgroundColor(getResources().getColor(R.color.colorOfSnackBar, getApplicationContext().getTheme()));
+        snackbar.setText(message);
+        snackbar.show();
     }
 }
 

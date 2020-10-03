@@ -27,6 +27,9 @@
     <string name="currentValue">Сегодня</string>
     <string name="previousValue">Вчера</string>
     <string name="nominal">за</string>
-    <string name="daynight_theme_switcher">DayNight theme switcher</string>
-    <string name="switch_currency_description">SwitchCurrencyFromOnTo</string>
+    <string name="daynight_theme_switcher">Переключатель темы</string>
+    <string name="switch_currency_description">Поменять местами валюты</string>
+    <string name="dataBaseIsActual">"База данных актуальна"</string>
+    <string name="offline">Отсутствует подключение к сети</string>
+    <string name="online">Подключено</string>
 </resources>
