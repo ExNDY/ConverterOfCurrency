@@ -91,20 +91,15 @@
                             android:layout_height="match_parent"
                             android:scrollbarAlwaysDrawVerticalTrack="true"
                             />
-                        <EditText
+                        <TextView
+                            android:gravity="center_horizontal|center_vertical"
                             android:id="@+id/valueFrom"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:textColor="@color/textColor"
-                            android:digits="1234567890."
-                            android:focusableInTouchMode="false"
-                            android:background="@drawable/ripple_effect"
-                            android:textAlignment="center"
+                            android:textAlignment="gravity"
                             android:textSize="32sp"
                             android:textStyle="bold"
-                            android:textIsSelectable="true"
-                            android:cursorVisible="true"
-                            android:focusable="false"
                             android:lines="1"
                             android:scrollbars="horizontal"
                             android:scrollHorizontally="true"
@@ -124,22 +119,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             />
-                        <EditText
+                        <TextView
+                            android:gravity="center_horizontal|center_vertical"
                             android:id="@+id/valueTo"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:digits="1234567890."
                             android:background="@android:color/transparent"
-                            android:textAlignment="center"
+                            android:textAlignment="gravity"
                             android:textSize="32sp"
                             android:textStyle="bold"
                             android:textColor="@color/colorPrimary"
-                            android:textIsSelectable="true"
-
-                            android:focusable="false"
-                            android:lines="1"
                             android:scrollbars="horizontal"
-
                             android:scrollHorizontally="true"
                             android:ellipsize="end"
                             android:singleLine="true"/>

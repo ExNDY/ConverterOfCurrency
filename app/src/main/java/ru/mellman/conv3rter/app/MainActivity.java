@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -44,7 +45,7 @@ import ru.mellman.conv3rter.data_adapters.CurrencyRate;
 import ru.mellman.conv3rter.data_adapters.CurrencyRateAdapter;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText _txtValueFrom, _txtValueTo;
+    private TextView _txtValueFrom, _txtValueTo;
     private ListView _listOfCurrencyRates;
     private Spinner _spinnerFrom, _spinnerTo;
     private SwitchMaterial _switchThemeMaterial;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         loadSpinnerPos();
         currencyAdapter = new CoursesOfCurrencyAdapter(this,R.layout.list_item ,courseList);
         _listOfCurrencyRates.setAdapter(currencyAdapter);
-
+/*
         _txtValueFrom.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -101,10 +102,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
 
-                calculateCourseBy(_txtValueFrom, _txtValueTo);
+                calculateCourseBy(_txtValueFrom.getText().toString());
 
             }
-        });
+        });*/
 
     }
 
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 _selectedPosFrom = (int)parent.getItemIdAtPosition(position);
                 saveSpinnerPos(_selectedPosFrom, _selectedPosTo);
-                calculateCourseBy(_txtValueFrom, _txtValueTo);
+                calculateCourseBy(_txtValueFrom.getText().toString());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 _selectedPosTo = (int)parent.getItemIdAtPosition(position);
                 saveSpinnerPos(_selectedPosFrom, _selectedPosTo);
-                calculateCourseBy(_txtValueFrom, _txtValueTo);
+                calculateCourseBy(_txtValueFrom.getText().toString());
             }
 
             @Override
@@ -168,15 +169,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void calculateCourseBy(EditText editTextFrom, EditText editTextTo){
-        if(!editTextFrom.getText().toString().equals("")){
+    private void calculateCourseBy(String editTextFrom){
+        if(!editTextFrom.equals("")){
             try {
-                double _val = Double.parseDouble(editTextFrom.getText().toString());
+                double _val = Double.parseDouble(editTextFrom);
                 _val = Function.convert(currencyRateList.get(_selectedPosFrom).getRate(), currencyRateList.get(_selectedPosTo).getRate(),_val);
-                editTextTo.setText(Function.getDecimalToFormat(_val));
+                _txtValueTo.setText(Function.getDecimalToFormat(_val));
             }
             catch (Exception e){
-                editTextTo.setText("ERROR");
+                _txtValueTo.setText("ERROR");
             }
 
         }
@@ -266,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) {
                 _txtValueFrom.setText("0");
-                calculateCourseBy(_txtValueFrom, _txtValueTo);
+                calculateCourseBy(_txtValueFrom.getText().toString());
                 return true;
             }
         });
@@ -302,22 +303,45 @@ public class MainActivity extends AppCompatActivity {
         checkThemeMod(sharedPreferences);
     }
     private void InputNum(int num){
-        if(_txtValueFrom.getText().toString().equals("0")){
-            String text = String.valueOf(num);
-            _txtValueFrom.setText(text);
+        String txt = _txtValueFrom.getText().toString();
+        int length = txt.length();
+        if (length<10){
+            if(txt.contains(".")){
+                int checkDot = txt.indexOf(".");
+                int dif = txt.length()-checkDot;
+                if (dif<=2){
+                    if(txt.equals("0")){
+                        String text = String.valueOf(num);
+                        _txtValueFrom.setText(text);
+                    }
+                    else
+                    {
+                        String text = txt + num;
+                        _txtValueFrom.setText(text);
+                    }
+                }
+            }
+            else {
+                if(txt.equals("0")){
+                    String text = String.valueOf(num);
+                    _txtValueFrom.setText(text);
+                }
+                else
+                {
+                    String text = txt + num;
+                    _txtValueFrom.setText(text);
+                }
+            }
         }
-        else
-        {
-            String text = _txtValueFrom.getText().toString() + num;
-            _txtValueFrom.setText(text);
-        }
+        calculateCourseBy(_txtValueFrom.getText().toString());
     }
     private void InputDot(){
-        int checkDot = _txtValueFrom.getText().toString().indexOf(".");
+        String txt = _txtValueFrom.getText().toString();
+        int checkDot = txt.indexOf(".");
         if(checkDot==-1){
-            String text = _txtValueFrom.getText().toString()+".";
+            String text = txt+".";
             _txtValueFrom.setText(text);
-            calculateCourseBy(_txtValueFrom, _txtValueTo);
+            calculateCourseBy(_txtValueFrom.getText().toString());
         }
         else {
             SnackBarShow(getString(R.string.dot_in_line));
@@ -331,9 +355,11 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
-                _txtValueFrom.setText(_txtValueFrom.getText().delete(_txtValueFrom.getText().length() - 1, _txtValueFrom.getText().length()));
+                String txt = _txtValueFrom.getText().toString();
+                _txtValueFrom.setText(txt.substring(0, txt.length()-1));
             }
         }
+        calculateCourseBy(_txtValueFrom.getText().toString());
     }
     private void saveSpinnerPos(int selectedPosFrom, int selectedPosTo){
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
@@ -394,9 +420,11 @@ public class MainActivity extends AppCompatActivity {
 
                 currencyAdapter.notifyDataSetChanged();
                 currencyRateAdapter.notifyDataSetChanged();
+                SnackBarShow(getResources().getString(R.string.dataBaseWasUpdated));
             } catch (InterruptedException | TimeoutException e) {
                 e.printStackTrace();
             }
+
         }
         else {
             SnackBarShow(getResources().getString(R.string.dataBaseIsActual));
