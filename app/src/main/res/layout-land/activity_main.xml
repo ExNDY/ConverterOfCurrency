@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/backgroundColor"
+    android:clipChildren="false"
     tools:context=".app.MainActivity">
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="@color/colorPrimary"
-        style="@style/Widget.MaterialComponents.Toolbar"
-        android:elevation="8dp"
+        android:layout_height="wrap_content"
         >
-        <RelativeLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/colorPrimary"
+            style="@style/Widget.MaterialComponents.Toolbar"
+            android:elevation="16dp"
             >
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/dayNightSwitcher"
-                android:contentDescription="@string/daynight_theme_switcher"
-                android:layout_width="?actionBarSize"
-                android:layout_height="?actionBarSize"
-                android:layout_alignParentStart="true"
-                android:layout_margin="0dp"
-                />
-            <TextView
-                android:gravity="center_vertical"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:layout_margin="0dp"
-                android:text="@string/app_name"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/toolbar_TextColor"
-                />
-        </RelativeLayout>
-    </com.google.android.material.appbar.MaterialToolbar>
+                >
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/dayNightSwitcher"
+                    android:contentDescription="@string/day_night_theme_switcher"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="0dp"
+                    />
+                <TextView
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="0dp"
+                    android:text="@string/app_name"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/toolbar_TextColor"
+                    />
+            </RelativeLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
     <LinearLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -55,12 +63,12 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="10dp"
-                android:layout_marginEnd="20dp"
+                android:scrollbarThumbVertical="@color/colorPrimary"
                 android:background="@drawable/list_layout_bg"
                 android:elevation="8dp"
                 >
                 <ListView
-                    android:id="@+id/valuteListView"
+                    android:id="@+id/currencyListView"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     />
@@ -72,7 +80,7 @@
                 android:orientation="vertical"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:elevation="8dp"
                 android:background="@drawable/list_layout_bg">
                 <LinearLayout
@@ -91,21 +99,30 @@
                             android:layout_height="match_parent"
                             android:scrollbarAlwaysDrawVerticalTrack="true"
                             />
-                        <TextView
-                            android:gravity="center_horizontal|center_vertical"
-                            android:id="@+id/valueFrom"
+                        <HorizontalScrollView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:textColor="@color/textColor"
-                            android:textAlignment="gravity"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:lines="1"
                             android:scrollbars="horizontal"
-                            android:scrollHorizontally="true"
-                            android:ellipsize="end"
-                            android:singleLine="true"
-                            />
+                            android:fillViewport="true"
+                            android:scrollbarThumbHorizontal="@color/colorPrimary"
+                            android:scrollbarStyle="insideOverlay"
+                            android:fadeScrollbars="true"
+                            android:scrollIndicators="none">
+                            <TextView
+                                android:gravity="center_horizontal|center_vertical"
+                                android:id="@+id/valueFrom"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/textColor"
+                                android:textAlignment="gravity"
+                                android:textSize="40sp"
+                                android:textStyle="bold"
+                                android:textIsSelectable="true"
+                                android:lines="1"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                />
+                        </HorizontalScrollView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -119,21 +136,30 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             />
-                        <TextView
-                            android:gravity="center_horizontal|center_vertical"
-                            android:id="@+id/valueTo"
+                        <HorizontalScrollView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@android:color/transparent"
-                            android:textAlignment="gravity"
-                            android:textSize="32sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/colorPrimary"
                             android:scrollbars="horizontal"
-                            android:scrollHorizontally="true"
-                            android:ellipsize="end"
-                            android:singleLine="true"/>
-
+                            android:fillViewport="true"
+                            android:scrollbarThumbHorizontal="@color/colorPrimary"
+                            android:scrollbarStyle="insideOverlay"
+                            android:fadeScrollbars="true"
+                            android:scrollIndicators="none">
+                            <TextView
+                                android:gravity="center_horizontal|center_vertical"
+                                android:id="@+id/valueTo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/transparent"
+                                android:textAlignment="gravity"
+                                android:textSize="40sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"
+                                android:textIsSelectable="true"
+                                android:lines="1"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"/>
+                        </HorizontalScrollView>
                     </LinearLayout>
                 </LinearLayout>
                 <ImageButton
@@ -148,7 +174,7 @@
                     android:src="@drawable/ic_icon_switch"
                     android:scaleType="center"
                     android:elevation="8dp"
-                    />
+                    android:contentDescription="@string/switch_currency_description" />
             </RelativeLayout>
         </androidx.appcompat.widget.LinearLayoutCompat>
         <TableLayout
@@ -307,7 +333,7 @@
             </TableRow>
         </TableLayout>
     </LinearLayout>
-    </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
 

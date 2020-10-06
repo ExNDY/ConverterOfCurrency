@@ -15,7 +15,7 @@
         android:textSize="16sp"
         android:gravity="center"
         android:textStyle="bold"
-        android:text="@string/codevalute"/>
+        android:text="@string/code_of_currency"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/currencyName"
@@ -26,7 +26,7 @@
         android:textColor="@color/textColor"
         android:gravity="fill_vertical"
         android:textStyle="normal"
-        android:text="@string/namevalute"
+        android:text="@string/name_of_currency"
         android:ellipsize="end"
         />
     <LinearLayout

@@ -118,8 +118,8 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
             @Override
             public void run() {
                 Intent main = new Intent(SplashScreenActivity.this, MainActivity.class);
-                main.putParcelableArrayListExtra("cl", courseList);
-                main.putParcelableArrayListExtra("crl", currencyRateList);
+                main.putParcelableArrayListExtra(JSON_COURSES, courseList);
+                main.putParcelableArrayListExtra(JSON_RATES, currencyRateList);
                 startActivity(main);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();

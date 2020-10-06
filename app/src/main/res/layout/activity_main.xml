@@ -1,316 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/backgroundColor"
+    android:clipChildren="false"
     tools:context=".app.MainActivity">
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="@color/colorPrimary"
-        style="@style/Widget.MaterialComponents.Toolbar"
-        android:elevation="8dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
+        android:layout_height="wrap_content"
         >
-        <RelativeLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="@color/colorPrimary"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            android:elevation="8dp"
             >
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/dayNightSwitcher"
-                android:contentDescription="@string/daynight_theme_switcher"
-                android:layout_width="?actionBarSize"
-                android:layout_height="?actionBarSize"
-                android:layout_alignParentStart="true"
-                android:layout_margin="0dp"
-                />
-            <TextView
-                android:gravity="center_vertical"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:layout_margin="0dp"
-                android:text="@string/app_name"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/toolbar_TextColor"
-                />
-        </RelativeLayout>
+                >
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/dayNightSwitcher"
+                    android:contentDescription="@string/day_night_theme_switcher"
+                    android:layout_width="?actionBarSize"
+                    android:layout_height="?actionBarSize"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="0dp"
+                    />
+                <TextView
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="0dp"
+                    android:text="@string/app_name"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/toolbar_TextColor"
+                    />
+            </RelativeLayout>
 
-    </com.google.android.material.appbar.MaterialToolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/pullToRefresh"
+    <LinearLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:layout_margin="10dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/list_layout_bg"
-        android:elevation="8dp"
-        >
-        <ListView
-            android:id="@+id/valuteListView"
+        android:layout_height="match_parent">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/pullToRefresh"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="9"
-            android:divider="@color/colorDivider"
-            android:dividerHeight="1dp"
-            android:footerDividersEnabled="true"
-            />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    <RelativeLayout
-        android:layout_weight="3"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:elevation="8dp"
-        android:background="@drawable/list_layout_bg">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="horizontal">
-                <Spinner
-                    android:id="@+id/spinnerFrom"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:scrollbarAlwaysDrawVerticalTrack="true"
-                    />
-                <TextView
-                    android:gravity="center_horizontal|center_vertical"
-                    android:id="@+id/valueFrom"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textColor="@color/textColor"
-                    android:focusableInTouchMode="false"
-                    android:textAlignment="gravity"
-                    android:textSize="40sp"
-                    android:textStyle="bold"
-                    android:textIsSelectable="true"
-                    android:lines="1"
-                    android:scrollbars="horizontal"
-                    android:scrollHorizontally="true"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    />
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="horizontal">
-                <Spinner
-                    android:id="@+id/spinnerTo"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    />
-                <TextView
-                    android:id="@+id/valueTo"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    android:textAlignment="gravity"
-                    android:textSize="40sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorPrimary"
-                    android:textIsSelectable="true"
-                    android:lines="1"
-                    android:scrollbars="horizontal"
-                    android:scrollHorizontally="true"
-                    android:ellipsize="end"
-                    android:singleLine="true"/>
-            </LinearLayout>
-        </LinearLayout>
-        <ImageButton
-            style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-            android:background="@drawable/ripple_button"
-            android:id="@+id/switchFromToButton"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_marginEnd="10dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_icon_switch"
-            android:scaleType="center"
+            android:layout_weight="4"
+            android:layout_margin="10dp"
+            android:background="@drawable/list_layout_bg"
             android:elevation="8dp"
-            android:contentDescription="@string/switch_currency_description" />
-    </RelativeLayout>
-
-    <FrameLayout
-        android:layout_weight="4"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/on_half_round_element"
-        android:elevation="8dp">
-        <TableLayout
-            android:layout_marginTop="10dp"
-            android:background="@color/currencyListColor"
-            android:id="@+id/numPad"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:shrinkColumns="*"
-            android:stretchColumns="*"
-
-
             >
+            <ListView
+                android:animateLayoutChanges="true"
+                android:id="@+id/currencyListView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:divider="@color/colorDivider"
+                android:dividerHeight="1dp"
+                android:footerDividersEnabled="true"
+                android:scrollbarThumbVertical="@color/colorPrimary"
+                />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <RelativeLayout
+            android:layout_weight="3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:elevation="8dp"
+            android:background="@drawable/list_layout_bg">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal">
+                    <Spinner
+                        android:id="@+id/spinnerFrom"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:scrollbarAlwaysDrawVerticalTrack="true"
+                        />
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="horizontal"
+                        android:fillViewport="true"
+                        android:scrollbarThumbHorizontal="@color/colorPrimary"
+                        android:scrollbarStyle="insideOverlay"
+                        android:fadeScrollbars="true"
+                        android:scrollIndicators="none">
+                        <TextView
+                            android:gravity="center_horizontal|center_vertical"
+                            android:id="@+id/valueFrom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/textColor"
+                            android:textAlignment="gravity"
+                            android:textSize="40sp"
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"
+                            android:lines="1"
+                            android:scrollHorizontally="true"
+                            android:singleLine="true"
+                            />
+                    </HorizontalScrollView>
 
-            <TableRow
-                android:layout_height="match_parent" android:layout_weight="1"
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal">
+                    <Spinner
+                        android:id="@+id/spinnerTo"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        />
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scrollbars="horizontal"
+                        android:fillViewport="true"
+                        android:scrollbarThumbHorizontal="@color/colorPrimary"
+                        android:scrollbarStyle="insideOverlay"
+                        android:fadeScrollbars="true"
+                        android:scrollIndicators="none">
+                        <TextView
+                            android:id="@+id/valueTo"
+                            android:gravity="center_horizontal|center_vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/transparent"
+                            android:textAlignment="gravity"
+                            android:textSize="40sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/colorPrimary"
+                            android:textIsSelectable="true"
+                            android:lines="1"
+                            android:scrollHorizontally="true"
+                            android:singleLine="true"
+
+                            />
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+            </LinearLayout>
+            <ImageButton
+                style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                android:background="@drawable/ripple_button"
+                android:id="@+id/switchFromToButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/ic_icon_switch"
+                android:scaleType="center"
+                android:elevation="8dp"
+                android:contentDescription="@string/switch_currency_description" />
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_weight="4"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/on_half_round_element"
+            android:elevation="8dp">
+            <TableLayout
+                android:layout_marginTop="10dp"
+                android:background="@color/currencyListColor"
+                android:id="@+id/numPad"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:shrinkColumns="*"
+                android:stretchColumns="*"
+
+
                 >
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_1"
-                    android:textColor="@color/colorPrimary"
-                    />
+                <TableRow
+                    android:layout_height="match_parent" android:layout_weight="1"
+                    >
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_2"
-                    android:textColor="@color/colorPrimary"/>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_1"
+                        android:textColor="@color/colorPrimary"
+                        />
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_3"
-                    android:textColor="@color/colorPrimary"/>
-            </TableRow>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_2"
+                        android:textColor="@color/colorPrimary"/>
 
-            <TableRow
-                android:layout_height="match_parent" android:layout_weight="1"
-                >
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_3"
+                        android:textColor="@color/colorPrimary"/>
+                </TableRow>
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button4"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_4"
-                    android:textColor="@color/colorPrimary"/>
+                <TableRow
+                    android:layout_height="match_parent" android:layout_weight="1"
+                    >
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button5"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_5"
-                    android:textColor="@color/colorPrimary"/>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_4"
+                        android:textColor="@color/colorPrimary"/>
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button6"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_6"
-                    android:textColor="@color/colorPrimary"/>
-            </TableRow>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_5"
+                        android:textColor="@color/colorPrimary"/>
 
-            <TableRow
-                android:layout_height="match_parent" android:layout_weight="1"
-                >
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button6"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_6"
+                        android:textColor="@color/colorPrimary"/>
+                </TableRow>
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button7"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_7"
-                    android:textColor="@color/colorPrimary"/>
+                <TableRow
+                    android:layout_height="match_parent" android:layout_weight="1"
+                    >
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button8"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_8"
-                    android:textColor="@color/colorPrimary"/>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button7"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_7"
+                        android:textColor="@color/colorPrimary"/>
 
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button9"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_9"
-                    android:textColor="@color/colorPrimary"/>
-            </TableRow>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button8"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_8"
+                        android:textColor="@color/colorPrimary"/>
 
-            <TableRow android:layout_height="match_parent" android:layout_weight="1">
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/buttonDot"
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button9"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_9"
+                        android:textColor="@color/colorPrimary"/>
+                </TableRow>
 
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/dot"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorPrimary"/>
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/button0"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/_0"
-                    android:textColor="@color/colorPrimary"/>
-                <Button
-                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:textSize="24sp"
-                    android:id="@+id/buttonDel"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/del"
-                    android:textColor="@color/colorPrimary"/>
-            </TableRow>
-        </TableLayout>
-    </FrameLayout>
+                <TableRow android:layout_height="match_parent" android:layout_weight="1">
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/buttonDot"
 
-</LinearLayout>
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/dot"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"/>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/button0"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/_0"
+                        android:textColor="@color/colorPrimary"/>
+                    <Button
+                        style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textSize="24sp"
+                        android:id="@+id/buttonDel"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/del"
+                        android:textColor="@color/colorPrimary"/>
+                </TableRow>
+            </TableLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

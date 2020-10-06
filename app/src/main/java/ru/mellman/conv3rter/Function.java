@@ -1,5 +1,7 @@
 package ru.mellman.conv3rter;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
@@ -26,17 +28,26 @@ public class Function {
     public static String getDecimalToFormat(Double decimal){
         DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
         decimalFormatSymbols.setDecimalSeparator('.');
-        DecimalFormat decimalFormat = new DecimalFormat("#0.00", decimalFormatSymbols);
+        DecimalFormat decimalFormat = new DecimalFormat("#.##", decimalFormatSymbols);
         return decimalFormat.format(decimal);
     }
-
-    public static String getDateNow(){
-        String dateNow;
+    public static void copyToClipboard(String buffer, Context context){
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("",buffer);
+        assert clipboardManager != null;
+        clipboardManager.setPrimaryClip(clipData);
+    }
+    public static String getDate(String date){
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 0);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
+        try {
+            cal.setTime(Objects.requireNonNull(df.parse(date)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
-        dateNow = simpleDateFormat.format(cal.getTime());
-        return dateNow;
+        date = simpleDateFormat.format(cal.getTime());
+        return date;
     }
 
     public static boolean checkTheNeedForAnUpdate(String previousDateTimeUpdate){

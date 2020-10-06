@@ -6,13 +6,12 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -20,12 +19,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -35,7 +32,6 @@ import java.util.concurrent.TimeoutException;
 
 import ru.mellman.conv3rter.DataObject;
 import ru.mellman.conv3rter.DataTasks;
-import ru.mellman.conv3rter.DecimalDigitsInputFilter;
 import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.R;
 import ru.mellman.conv3rter.Snackbar;
@@ -45,21 +41,20 @@ import ru.mellman.conv3rter.data_adapters.CurrencyRate;
 import ru.mellman.conv3rter.data_adapters.CurrencyRateAdapter;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView _txtValueFrom, _txtValueTo;
+    private TextView _valueFrom, _valueTo;
     private ListView _listOfCurrencyRates;
     private Spinner _spinnerFrom, _spinnerTo;
     private SwitchMaterial _switchThemeMaterial;
     private ImageButton btnSwitchCurrency;
-    private String TAG = MainActivity.class.getSimpleName();
     public static final String PREF = "converterPreferences";
     public static final String JSON_COURSES = "JSON_Courses";
     public static final String JSON_RATES = "JSON_Rates";
     public static final String LAST_UPDATE_DATETIME = "lastUpdate";
     private int _selectedPosFrom, _selectedPosTo;
-    ArrayList<CoursesOfCurrency> courseList;
-    CoursesOfCurrencyAdapter currencyAdapter;
+    ArrayList<CoursesOfCurrency> currencyList;
+    CoursesOfCurrencyAdapter currencyListAdapter;
     ArrayList<CurrencyRate> currencyRateList;
-    CurrencyRateAdapter currencyRateAdapter;
+    CurrencyRateAdapter currencyRateListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,51 +63,30 @@ public class MainActivity extends AppCompatActivity {
         initUI();
         initSpinner();
 
-        if (getIntent().hasExtra("cl")){
-            courseList = getIntent().getParcelableArrayListExtra("cl");
+        if (getIntent().hasExtra(JSON_COURSES)){
+            currencyList = getIntent().getParcelableArrayListExtra(JSON_COURSES);
         }
-        if (getIntent().hasExtra("crl")){
-            currencyRateList = getIntent().getParcelableArrayListExtra("crl");
+        if (getIntent().hasExtra(JSON_RATES)){
+            currencyRateList = getIntent().getParcelableArrayListExtra(JSON_RATES);
         }
         if (savedInstanceState != null) {
-            _txtValueFrom.setText(savedInstanceState.getString("AreaFrom"));
+            _valueFrom.setText(savedInstanceState.getString("AreaFrom"));
 
-            courseList = savedInstanceState.getParcelableArrayList("courseList");
+            currencyList = savedInstanceState.getParcelableArrayList("courseList");
             currencyRateList = savedInstanceState.getParcelableArrayList("currencyRates");
-
         }
-        currencyRateAdapter = new CurrencyRateAdapter(this, currencyRateList);
-        _spinnerFrom.setAdapter(currencyRateAdapter);
-        _spinnerTo.setAdapter(currencyRateAdapter);
+        currencyRateListAdapter = new CurrencyRateAdapter(this, currencyRateList);
+        _spinnerFrom.setAdapter(currencyRateListAdapter);
+        _spinnerTo.setAdapter(currencyRateListAdapter);
         loadSpinnerPos();
-        currencyAdapter = new CoursesOfCurrencyAdapter(this,R.layout.list_item ,courseList);
-        _listOfCurrencyRates.setAdapter(currencyAdapter);
-/*
-        _txtValueFrom.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                calculateCourseBy(_txtValueFrom.getText().toString());
-
-            }
-        });*/
-
+        currencyListAdapter = new CoursesOfCurrencyAdapter(this,R.layout.list_item , currencyList);
+        _listOfCurrencyRates.setAdapter(currencyListAdapter);
     }
 
     protected void onResume() {
         super.onResume();
         if (getIntent().hasExtra("fromValue")){
-            _txtValueFrom.setText(getIntent().getStringExtra("fromValue"));
+            _valueFrom.setText(getIntent().getStringExtra("fromValue"));
         }
     }
     protected void onPause(){
@@ -121,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void recreate(){
         Intent main = getIntent();
-        main.putExtra("fromValue", _txtValueFrom.getText().toString());
+        main.putExtra("fromValue", _valueFrom.getText().toString());
         startActivity(main);
         overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
         finish();
@@ -130,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
     }
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("AreaFrom", _txtValueFrom.getText().toString());
-        outState.putParcelableArrayList("courseList", courseList);
+        outState.putString("AreaFrom", _valueFrom.getText().toString());
+        outState.putParcelableArrayList("courseList", currencyList);
         outState.putParcelableArrayList("currencyRates", currencyRateList);
         outState.putInt("selectedPosTo", _selectedPosTo);
         outState.putInt("selectedPosFrom", _selectedPosFrom);
@@ -142,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 _selectedPosFrom = (int)parent.getItemIdAtPosition(position);
                 saveSpinnerPos(_selectedPosFrom, _selectedPosTo);
-                calculateCourseBy(_txtValueFrom.getText().toString());
+                calculateCourseBy(_valueFrom.getText().toString());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -157,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 _selectedPosTo = (int)parent.getItemIdAtPosition(position);
                 saveSpinnerPos(_selectedPosFrom, _selectedPosTo);
-                calculateCourseBy(_txtValueFrom.getText().toString());
+                calculateCourseBy(_valueFrom.getText().toString());
             }
 
             @Override
@@ -174,10 +148,11 @@ public class MainActivity extends AppCompatActivity {
             try {
                 double _val = Double.parseDouble(editTextFrom);
                 _val = Function.convert(currencyRateList.get(_selectedPosFrom).getRate(), currencyRateList.get(_selectedPosTo).getRate(),_val);
-                _txtValueTo.setText(Function.getDecimalToFormat(_val));
+                String result = Function.getDecimalToFormat(_val);
+                _valueTo.setText(result);
             }
             catch (Exception e){
-                _txtValueTo.setText("ERROR");
+                _valueTo.setText(getResources().getString(R.string.error));
             }
 
         }
@@ -201,11 +176,26 @@ public class MainActivity extends AppCompatActivity {
         _switchThemeMaterial = findViewById(R.id.dayNightSwitcher);
         _spinnerFrom = findViewById(R.id.spinnerFrom);
         _spinnerTo = findViewById(R.id.spinnerTo);
-        _txtValueFrom = findViewById(R.id.valueFrom);
-        _txtValueTo = findViewById(R.id.valueTo);
-        _listOfCurrencyRates = findViewById(R.id.valuteListView);
+        _valueFrom = findViewById(R.id.valueFrom);
+        _valueTo = findViewById(R.id.valueTo);
+        _listOfCurrencyRates = findViewById(R.id.currencyListView);
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
+        _valueTo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                SharedPreferences sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
+                CurrencyRate from = (CurrencyRate) _spinnerFrom.getSelectedItem();
+                CurrencyRate to = (CurrencyRate) _spinnerTo.getSelectedItem();
+                String buf = getResources().getString(R.string.clipboardstring_1) +" "+ _valueFrom.getText().toString()+from.getCharCode()
+                        +" "+ getResources().getString(R.string.clipboardstring_2)+" "+_valueTo.getText().toString()
+                        +to.getCharCode()+" "+getResources().getString(R.string.clipboardstring_3)
+                        +Function.getDate(sharedPreferences.getString(LAST_UPDATE_DATETIME,""));
+                Function.copyToClipboard(buf, getApplicationContext());
+                SnackBarShow(getResources().getString(R.string.copy_to_clipboard));
+                return true;
+            }
+        });
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -266,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
         btnDel.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                _txtValueFrom.setText("0");
-                calculateCourseBy(_txtValueFrom.getText().toString());
+                _valueFrom.setText("0");
+                calculateCourseBy(_valueFrom.getText().toString());
                 return true;
             }
         });
@@ -297,69 +287,76 @@ public class MainActivity extends AppCompatActivity {
                 ed.apply();
             }
         });
-        _txtValueFrom.setShowSoftInputOnFocus(false);
-        _txtValueFrom.setFilters(new InputFilter[]{new DecimalDigitsInputFilter()});
+        _valueFrom.setShowSoftInputOnFocus(false);
+
         SharedPreferences sharedPreferences = getSharedPreferences(PREF,MODE_PRIVATE);
         checkThemeMod(sharedPreferences);
     }
     private void InputNum(int num){
-        String txt = _txtValueFrom.getText().toString();
+        String txt = _valueFrom.getText().toString();
         int length = txt.length();
-        if (length<10){
+        if (length<15){
             if(txt.contains(".")){
                 int checkDot = txt.indexOf(".");
                 int dif = txt.length()-checkDot;
                 if (dif<=2){
                     if(txt.equals("0")){
                         String text = String.valueOf(num);
-                        _txtValueFrom.setText(text);
+                        _valueFrom.setText(text);
                     }
                     else
                     {
                         String text = txt + num;
-                        _txtValueFrom.setText(text);
+                        _valueFrom.setText(text);
                     }
+                }
+                else {
+                    SnackBarShow(getString(R.string.after_dots_symbol_limit));
                 }
             }
             else {
                 if(txt.equals("0")){
                     String text = String.valueOf(num);
-                    _txtValueFrom.setText(text);
+                    _valueFrom.setText(text);
                 }
                 else
                 {
                     String text = txt + num;
-                    _txtValueFrom.setText(text);
+                    _valueFrom.setText(text);
                 }
             }
+            calculateCourseBy(_valueFrom.getText().toString());
         }
-        calculateCourseBy(_txtValueFrom.getText().toString());
+        else {
+            SnackBarShow(getString(R.string.string_limit));
+        }
+
     }
     private void InputDot(){
-        String txt = _txtValueFrom.getText().toString();
+        String txt = _valueFrom.getText().toString();
         int checkDot = txt.indexOf(".");
         if(checkDot==-1){
             String text = txt+".";
-            _txtValueFrom.setText(text);
-            calculateCourseBy(_txtValueFrom.getText().toString());
+            _valueFrom.setText(text);
+            calculateCourseBy(_valueFrom.getText().toString());
         }
         else {
             SnackBarShow(getString(R.string.dot_in_line));
         }
     }
     private void DelNumber(){
-        if(_txtValueFrom.length()!=0){
-            if(_txtValueFrom.length()-1==0)
+        if(_valueFrom.length()!=0){
+            if(_valueFrom.length()-1==0)
             {
-                _txtValueFrom.setText("0");
+                _valueFrom.setText("0");
             }
             else
             {
-                String txt = _txtValueFrom.getText().toString();
-                _txtValueFrom.setText(txt.substring(0, txt.length()-1));
+                String txt = _valueFrom.getText().toString();
+                _valueFrom.setText(txt.substring(0, txt.length()-1));
             }
         }
-        calculateCourseBy(_txtValueFrom.getText().toString());
+        calculateCourseBy(_valueFrom.getText().toString());
     }
     private void saveSpinnerPos(int selectedPosFrom, int selectedPosTo){
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
@@ -382,15 +379,17 @@ public class MainActivity extends AppCompatActivity {
         int posTo = _spinnerTo.getSelectedItemPosition();
         _spinnerFrom.setSelection(posTo,true);
         _spinnerTo.setSelection(posFrom, true);
-        if (_txtValueFrom.length()!=0){
+
+
+        if (_valueFrom.length()!=0){
             try {
-                double val = Double.parseDouble(_txtValueTo.getText().toString());
+                double val = Double.parseDouble(_valueTo.getText().toString());
                 String s = Function.getDecimalToFormat(val);
-                _txtValueTo.setText("");
-                _txtValueFrom.setText(s);
+                _valueTo.setText("");
+                _valueFrom.setText(s);
             }
             catch (Exception e){
-                _txtValueTo.setText("ERROR");
+                _valueTo.setText(getResources().getString(R.string.error));
             }
 
         }
@@ -404,10 +403,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void checkUpdate(SharedPreferences sharedPreferences){
-        if (Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, "")) && Function.isOnline(getApplicationContext())){
+        boolean check = Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
+        if (check && Function.isOnline(getApplicationContext())){
             try {
                 DataObject data = DataTasks.getDataOfCurrency();
-                courseList = data.getCoursesList();
+                currencyList = data.getCoursesList();
                 currencyRateList = data.getRatesList();
                 String jsonCourses = data.getJsonObjectCourses();
                 String jsonRates = data.getJsonObjectRates();
@@ -418,8 +418,8 @@ public class MainActivity extends AppCompatActivity {
                 ed.putString(LAST_UPDATE_DATETIME, data.getDateUpdate());
                 ed.apply();
 
-                currencyAdapter.notifyDataSetChanged();
-                currencyRateAdapter.notifyDataSetChanged();
+                currencyListAdapter.notifyDataSetChanged();
+                currencyRateListAdapter.notifyDataSetChanged();
                 SnackBarShow(getResources().getString(R.string.dataBaseWasUpdated));
             } catch (InterruptedException | TimeoutException e) {
                 e.printStackTrace();
@@ -427,14 +427,20 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else {
-            SnackBarShow(getResources().getString(R.string.dataBaseIsActual));
+            if (!check && Function.isOnline(getApplicationContext())){
+                SnackBarShow(getResources().getString(R.string.dataBaseIsActual));
+            }
+            if (!Function.isOnline(getApplicationContext())){
+                SnackBarShow(getResources().getString(R.string.offline));
+            }
+
         }
     }
     private void SnackBarShow(String message){
         ViewGroup view = (ViewGroup) findViewById(android.R.id.content);
         final Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_SHORT);
         View snackView = snackbar.getView();
-        snackView.setBackgroundColor(getResources().getColor(R.color.colorOfSnackBar, getApplicationContext().getTheme()));
+        snackView.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorOfSnackBar, getApplicationContext().getTheme()));
         snackbar.setText(message);
         snackbar.show();
     }
