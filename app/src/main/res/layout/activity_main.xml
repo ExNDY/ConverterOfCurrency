@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/backgroundColor"
     android:clipChildren="false"
+    android:background="@color/backgroundColor"
     tools:context=".app.MainActivity">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"

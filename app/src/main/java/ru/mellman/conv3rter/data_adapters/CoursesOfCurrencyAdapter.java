@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import ru.mellman.conv3rter.R;
 
 public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
-    Context context;
-    int layoutResourceId;
-    ArrayList<CoursesOfCurrency> data;
+    private Context context;
+    private int layoutResourceId;
+    private ArrayList<CoursesOfCurrency> data;
 
     public CoursesOfCurrencyAdapter(@NonNull Context context,@LayoutRes int layoutResourceId, ArrayList<CoursesOfCurrency> data){
         super(context,layoutResourceId,data);
@@ -42,9 +42,9 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
             holder = new CoursesOfCurrencyHolder();
             holder.code = row.findViewById(R.id.code);
             holder.currencyName = row.findViewById(R.id.currencyName);
-            holder.currentValue = row.findViewById(R.id.valuevalute);
-            holder.difValue = row.findViewById(R.id.difvalue);
-            holder.nominal = row.findViewById(R.id.nominalvalute);
+            holder.currentValue = row.findViewById(R.id.currency_value);
+            holder.difValue = row.findViewById(R.id.difference_value);
+            holder.nominal = row.findViewById(R.id.nominal_of_currency);
             holder.differenceImage = row.findViewById(R.id.difImage);
             row.setTag(holder);
         }
@@ -54,7 +54,7 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
         CoursesOfCurrency c = data.get(position);
         holder.code.setText(c.getCharCode());
         holder.currencyName.setText(c.getName());
-        String currentValueStr = String.valueOf(c.getCourseValue())+"₽";
+        String currentValueStr = c.getCourseValue()+"₽";
         holder.currentValue.setText(currentValueStr);
         double dif = c.getDifference();
         if (dif>0){

@@ -7,14 +7,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.util.Log;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -68,7 +64,7 @@ public class Function {
         else {needUpdate=true;}
         return needUpdate;
     }
-    //Check InternetConncection WIFI, MOBILE
+    //Check InternetConnection WIFI, MOBILE
     public static boolean isOnline(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {

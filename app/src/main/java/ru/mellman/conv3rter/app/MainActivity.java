@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
