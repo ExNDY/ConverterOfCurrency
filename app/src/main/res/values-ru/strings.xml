@@ -24,8 +24,8 @@
     <string name="dot_in_line">Точка уже есть</string>
     <string name="last_update">Последнее обновление: </string>
     <string name="code">КОД</string>
-    <string name="currentValue">Сегодня</string>
-    <string name="previousValue">Вчера</string>
+    <string name="currentValue">99.99</string>
+    <string name="previousValue">88.88</string>
     <string name="nominal">за</string>
     <string name="day_night_theme_switcher">Переключатель темы</string>
     <string name="switch_currency_description">Поменять местами валюты</string>

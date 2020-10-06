@@ -4,13 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class CoursesOfCurrency implements Parcelable{
-
+    private String id;
     private String charCode;
     private String name;
     private int nominal;
     private Double courseValue;
     private Double previousValue;
     {
+        id = "Undefined";
         charCode = "---";
         name = "Undefined";
         nominal = 0;
@@ -21,8 +22,9 @@ public class CoursesOfCurrency implements Parcelable{
 
     }
 
-    public CoursesOfCurrency(String charCode, String name, int nominal, Double value, Double previous){
+    public CoursesOfCurrency(String id, String charCode, String name, int nominal, Double value, Double previous){
         super();
+        this.id = id;
         this.charCode = charCode;
         this.name = name;
         this.nominal = nominal;
@@ -31,6 +33,7 @@ public class CoursesOfCurrency implements Parcelable{
     }
 
     protected CoursesOfCurrency(Parcel in){
+        id = in.readString();
         charCode = in.readString();
         name = in.readString();
         nominal = in.readInt();
@@ -49,7 +52,12 @@ public class CoursesOfCurrency implements Parcelable{
             return new CoursesOfCurrency[size];
         }
     };
-
+    public String getId(){
+        return id;
+    }
+    public void setId(String id){
+        this.id = id;
+    }
     public String getCharCode(){
         return charCode;
     }
@@ -91,6 +99,7 @@ public class CoursesOfCurrency implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeString(charCode);
         dest.writeString(name);
         dest.writeInt(nominal);

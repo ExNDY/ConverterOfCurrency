@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.util.Log;
-import android.widget.Toast;
 
-public class NetworkChangeReceiver extends BroadcastReceiver {
+public final class NetworkChangeReceiver extends BroadcastReceiver {
     private NetworkChangeReceiverListener listener;
     public NetworkChangeReceiver(NetworkChangeReceiverListener listener){
         this.listener = listener;
@@ -18,11 +17,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         try {
             if(isOnline(context)){
                 listener.isNetworkOnline();
-
             }
             else {
                 listener.isNetworkOffline();
-
             }
         }
         catch (NullPointerException e){
@@ -49,8 +46,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         return false;
     }
     public interface NetworkChangeReceiverListener{
-        public void isNetworkOffline();
-        public void isNetworkOnline();
+        void isNetworkOffline();
+        void isNetworkOnline();
     }
 
 }

@@ -15,13 +15,13 @@ import ru.mellman.conv3rter.data_adapters.CurrencyRate;
 
 public class JSONObjParser {
     private static CoursesOfCurrency getCourse(JSONObject response) throws JSONException{
+        String id = response.getString("ID");
         String charName = response.getString("CharCode");
         String name = response.getString("Name");
         int nominal = Integer.parseInt(response.getString("Nominal"));
         Double course = Double.valueOf(response.getString("Value"));
         Double previous = Double.valueOf(response.getString("Previous"));
-
-        return new CoursesOfCurrency(charName, name, nominal, course, previous);
+        return new CoursesOfCurrency(id, charName, name, nominal, course, previous);
     }
 
     private static CurrencyRate getRate(JSONObject response, String key) throws JSONException{

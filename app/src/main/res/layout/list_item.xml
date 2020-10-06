@@ -35,7 +35,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/valuevalute"
+            android:id="@+id/currency_value"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:textStyle="normal"
@@ -44,7 +44,7 @@
             android:gravity="center_horizontal"
             android:text="@string/value"/>
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/nominalvalute"
+            android:id="@+id/nominal_of_currency"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:textStyle="normal"
@@ -67,7 +67,7 @@
             android:layout_height="10dp"
             android:layout_gravity="end"/>
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/difvalue"
+            android:id="@+id/difference_value"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textStyle="normal"

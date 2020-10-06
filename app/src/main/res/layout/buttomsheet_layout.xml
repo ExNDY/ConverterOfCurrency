@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomsheet"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="false"
+    android:background="@android:color/transparent"
+    android:layout_gravity="bottom"
+    app:behavior_hideable="true"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:background="@color/bottomsheetTitleBar_color"
+        android:elevation="4dp">
+        <FrameLayout
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/circle"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp">
+            <TextView
+                android:id="@+id/bs_code_currency"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textStyle="bold"
+                android:textColor="@color/bottomsheetIconCharCodeTextColor"
+                android:textAlignment="gravity"
+                android:gravity="center_horizontal|center_vertical"
+                android:textSize="24sp"
+                android:textIsSelectable="true"
+                android:lines="1"/>
+        </FrameLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp">
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/bs_name_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:textColor="@color/bottomsheetTitleTextColor"
+                android:textAlignment="gravity"
+                android:gravity="bottom|start"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textIsSelectable="false"
+                android:ellipsize="end"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true" />
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/bs_name"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="Динамика котировок курса"
+                android:textColor="@color/bottomsheetTitle2TextColor"
+                android:textAlignment="gravity"
+                android:gravity="top|start"
+                android:textSize="12sp"
+                android:textIsSelectable="false"
+                android:lines="1"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:clipChildren="false"
+        android:background="@color/elementBackground">
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_timeline_24dp"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"/>
+            <LinearLayout
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_weight="1"
+                        android:id="@+id/bs_previous_value"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/previousValue"
+                        android:textColor="@color/iconUI_color"
+                        android:textAlignment="gravity"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="30sp"
+                        android:textIsSelectable="true"
+                        android:lines="1"/>
+
+                    <TextView
+                        android:layout_weight="1"
+                        android:id="@+id/bs_current_value"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:text="@string/currentValue"
+                        android:textColor="@color/iconUI_color"
+                        android:textAlignment="gravity"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="30sp"
+                        android:textIsSelectable="true"
+                        android:lines="1"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_weight="1"
+                        android:id="@+id/bs_previous_value_date"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/iconUI_color"
+                        android:textAlignment="gravity"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="12sp"
+                        android:textIsSelectable="true"
+                        android:lines="1"/>
+
+                    <TextView
+                        android:layout_weight="1"
+                        android:id="@+id/bs_current_value_date"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/iconUI_color"
+                        android:textAlignment="gravity"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="12sp"
+                        android:textIsSelectable="true"
+                        android:lines="1"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/bs_difference_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textStyle="normal"
+                    android:textSize="20sp"
+                    android:textAlignment="gravity"
+                    android:gravity="center|center_vertical"
+                    android:text="@string/value"/>
+                <LinearLayout
+                    android:layout_width="20dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_weight="1"
+                    android:id="@+id/bs_difImageUp"
+                    android:layout_width="24dp"
+                    android:scaleType="fitCenter"
+                    android:layout_height="0dp"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:src="@drawable/ic_up"/>
+                    <ImageView
+                        android:layout_weight="1"
+                        android:id="@+id/bs_difImageDown"
+                        android:layout_width="24dp"
+                        android:scaleType="fitCenter"
+                        android:layout_height="0dp"
+                        android:layout_gravity="top|center_horizontal"
+                        android:src="@drawable/ic_down"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+        <View style="@style/Divider.Horizontal" android:layout_marginStart="10dp" android:layout_marginEnd="10dp"/>
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible"
+            >
+
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:checkedChip="@id/chip_1month"
+                app:singleSelection="true"
+                app:chipSpacingHorizontal="0dp"
+                app:singleLine="true"
+                >
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_7days"
+                    android:gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:text="7 days"
+                    android:textColor="#000000"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_1month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:text="1 month"
+                    android:textColor="#000000"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_3month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:text="3 month"
+                    android:textColor="#000000"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_6month"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:text="6 month"
+                    android:textColor="#000000"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_1year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:text="1 year"
+                    android:textColor="#000000"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
+            </com.google.android.material.chip.ChipGroup>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_margin="10dp"
+                app:cardElevation="8dp"
+                app:cardCornerRadius="8dp"
+                app:cardBackgroundColor="@color/colorAccent"
+
+                >
+
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

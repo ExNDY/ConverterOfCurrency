@@ -7,14 +7,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.util.Log;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -50,6 +46,19 @@ public class Function {
         return date;
     }
 
+    public static String getFormatDate(String date){
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
+        try {
+            cal.setTime(Objects.requireNonNull(df.parse(date)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
+        date = simpleDateFormat.format(cal.getTime());
+        return date;
+    }
+
     public static boolean checkTheNeedForAnUpdate(String previousDateTimeUpdate){
         boolean needUpdate;
         if (!previousDateTimeUpdate.equals("")){
@@ -63,12 +72,12 @@ public class Function {
             cal.add(Calendar.DATE, 1);
             Date dateNextUpdate = cal.getTime();
             Date dateCurrent = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime();
-            needUpdate = dateNextUpdate.before(dateCurrent);
+            needUpdate = dateCurrent.after(dateNextUpdate);
         }
         else {needUpdate=true;}
         return needUpdate;
     }
-    //Check InternetConncection WIFI, MOBILE
+    //Check InternetConnection WIFI, MOBILE
     public static boolean isOnline(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {

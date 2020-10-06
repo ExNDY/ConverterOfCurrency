@@ -23,8 +23,8 @@
     <string name="dot_in_line">Dot has in line</string>
     <string name="last_update">Last update: </string>
     <string name="code">CODE</string>
-    <string name="currentValue">Current Day</string>
-    <string name="previousValue">Previous Day</string>
+    <string name="currentValue">99.99</string>
+    <string name="previousValue">88.88</string>
     <string name="nominal">for</string>
     <string name="day_night_theme_switcher">DayNight theme switcher</string>
     <string name="switch_currency_description">SwitchCurrencyFromOnTo</string>

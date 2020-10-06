@@ -5,12 +5,13 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/backgroundColor"
+    android:fitsSystemWindows="false"
     android:clipChildren="false"
     tools:context=".app.MainActivity">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         >
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -19,7 +20,8 @@
             android:background="@color/colorPrimary"
             app:contentInsetLeft="0dp"
             app:contentInsetStart="0dp"
-            android:elevation="8dp"
+            style="@style/Widget.MaterialComponents.Toolbar"
+            android:elevation="4dp"
             >
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -27,6 +29,8 @@
                 >
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/dayNightSwitcher"
+                    android:theme="@style/AppTheme"
+                    app:useMaterialThemeColors="true"
                     android:contentDescription="@string/day_night_theme_switcher"
                     android:layout_width="?actionBarSize"
                     android:layout_height="?actionBarSize"
@@ -53,29 +57,42 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        >
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/pullToRefresh"
+            android:layout_weight="3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"
-            android:layout_margin="10dp"
-            android:background="@drawable/list_layout_bg"
-            android:elevation="8dp"
+
+            android:background="@color/elementBackground"
+
             >
             <ListView
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
                 android:animateLayoutChanges="true"
                 android:id="@+id/currencyListView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:divider="@color/colorDivider"
+
                 android:dividerHeight="1dp"
+                android:scrollbars="vertical"
+                android:scrollbarStyle="insideInset"
                 android:footerDividersEnabled="true"
                 android:scrollbarThumbVertical="@color/colorPrimary"
                 />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-        <RelativeLayout
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/elementBackground">
+        </FrameLayout>
+
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_weight="3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -83,117 +100,119 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
-            android:elevation="8dp"
-            android:background="@drawable/list_layout_bg">
-            <LinearLayout
-                android:layout_width="match_parent"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp"
+            app:cardBackgroundColor="@color/elementBackground">
+            <RelativeLayout
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_width="match_parent">
                 <LinearLayout
-                    android:layout_weight="1"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:orientation="horizontal">
-                    <Spinner
-                        android:id="@+id/spinnerFrom"
-                        android:layout_gravity="center_vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:scrollbarAlwaysDrawVerticalTrack="true"
-                        />
-                    <HorizontalScrollView
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_weight="1"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scrollbars="horizontal"
-                        android:fillViewport="true"
-                        android:scrollbarThumbHorizontal="@color/colorPrimary"
-                        android:scrollbarStyle="insideOverlay"
-                        android:fadeScrollbars="true"
-                        android:scrollIndicators="none">
-                        <TextView
-                            android:gravity="center_horizontal|center_vertical"
-                            android:id="@+id/valueFrom"
+                        android:layout_height="0dp"
+                        android:orientation="horizontal">
+                        <Spinner
+                            android:id="@+id/spinnerFrom"
+                            android:layout_gravity="center_vertical"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:textColor="@color/textColor"
-                            android:textAlignment="gravity"
-                            android:textSize="40sp"
-                            android:textStyle="bold"
-                            android:textIsSelectable="true"
-                            android:lines="1"
-                            android:scrollHorizontally="true"
-                            android:singleLine="true"
+                            android:scrollbarAlwaysDrawVerticalTrack="true"
                             />
-                    </HorizontalScrollView>
-
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:orientation="horizontal">
-                    <Spinner
-                        android:id="@+id/spinnerTo"
-                        android:layout_gravity="center_vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        />
-                    <HorizontalScrollView
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scrollbars="horizontal"
+                            android:fillViewport="true"
+                            android:scrollbarThumbHorizontal="@color/colorPrimary"
+                            android:scrollbarStyle="insideOverlay"
+                            android:fadeScrollbars="true"
+                            android:scrollIndicators="none">
+                            <TextView
+                                android:gravity="center_horizontal|center_vertical"
+                                android:id="@+id/valueFrom"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:textColor="@color/textColor"
+                                android:textAlignment="gravity"
+                                android:textSize="40sp"
+                                android:textStyle="bold"
+                                android:textIsSelectable="true"
+                                android:lines="1"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                />
+                        </HorizontalScrollView>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_weight="1"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scrollbars="horizontal"
-                        android:fillViewport="true"
-                        android:scrollbarThumbHorizontal="@color/colorPrimary"
-                        android:scrollbarStyle="insideOverlay"
-                        android:fadeScrollbars="true"
-                        android:scrollIndicators="none">
-                        <TextView
-                            android:id="@+id/valueTo"
-                            android:gravity="center_horizontal|center_vertical"
+                        android:layout_height="0dp"
+                        android:orientation="horizontal">
+                        <Spinner
+                            android:id="@+id/spinnerTo"
+                            android:layout_gravity="center_vertical"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:background="@android:color/transparent"
-                            android:textAlignment="gravity"
-                            android:textSize="40sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/colorPrimary"
-                            android:textIsSelectable="true"
-                            android:lines="1"
-                            android:scrollHorizontally="true"
-                            android:singleLine="true"
-
                             />
-                    </HorizontalScrollView>
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scrollbars="horizontal"
+                            android:fillViewport="true"
+                            android:scrollbarThumbHorizontal="@color/colorPrimary"
+                            android:scrollbarStyle="insideOverlay"
+                            android:fadeScrollbars="true"
+                            android:scrollIndicators="none">
+                            <TextView
+                                android:id="@+id/valueTo"
+                                android:gravity="center_horizontal|center_vertical"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/transparent"
+                                android:textAlignment="gravity"
+                                android:textSize="40sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/colorPrimary"
+                                android:textIsSelectable="true"
+                                android:lines="1"
+                                android:scrollHorizontally="true"
+                                android:singleLine="true"
+                                />
+                        </HorizontalScrollView>
 
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-            <ImageButton
-                style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
-                android:background="@drawable/ripple_button"
-                android:id="@+id/switchFromToButton"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginEnd="10dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/ic_icon_switch"
-                android:scaleType="center"
-                android:elevation="8dp"
-                android:contentDescription="@string/switch_currency_description" />
-        </RelativeLayout>
+                <ImageButton
+                    style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:background="@drawable/ripple_button"
+                    android:id="@+id/switchFromToButton"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/ic_icon_switch"
+                    android:scaleType="center"
+                    android:elevation="8dp"
+                    android:contentDescription="@string/switch_currency_description" />
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
 
         <FrameLayout
             android:layout_weight="4"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/on_half_round_element"
-            android:elevation="8dp">
+            android:elevation="4dp">
             <TableLayout
                 android:layout_marginTop="10dp"
-                android:background="@color/currencyListColor"
+                android:background="@color/elementBackground"
                 android:id="@+id/numPad"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -343,6 +362,4 @@
             </TableLayout>
         </FrameLayout>
     </LinearLayout>
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

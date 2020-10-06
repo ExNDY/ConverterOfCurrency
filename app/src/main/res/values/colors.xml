@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F44336</color>
-    <color name="colorPrimaryDark">#D32F2F</color>
-    <color name="colorAccent">#ffcdd2</color>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorAccent">#FF9800</color>
     <color name="colorBtn_Pressed">#36FFFFFF</color>
     <color name="toolbar_TextColor">#FFFFFF</color>
     <color name="iconUI_color">#29434e</color>
+
     <color name="courseGREEN">#8bc34a</color>
     <color name="courseRED">#f44336</color>
     <color name="courseGREY">#37474f</color>
+
     <color name="textColor">#546e7a</color>
     <color name="currencyListColor">#fafafa</color>
+    <color name="elementBackground">#fafafa</color>
     <color name="backgroundColor">#cfd8dc</color>
     <color name="colorNominal">#cfd8dc</color>
+
     <color name="colorDivider">#eeeeee</color>
+
     <color name="colorSwitcherCurrency">#fff</color>
+
     <color name="colorOfSnackBar">#263238</color>
     <color name="colorREDForSnackBar">#d32f2f</color>
     <color name="colorGREENForSnackBar">#388e3c</color>
+
+    <color name="splashscreenPrimaryColor">#4CAF50</color>
+    <color name="splashscreenPrimaryDarkColor">#388E3C</color>
+    <color name="splashscreenAccentColor">#FF9800</color>
+
+    <color name="bottomsheetTitleBar_color">@color/colorPrimaryDark</color>
+    <color name="bottomsheetIconCharCodeColor">#5ab55e</color>
+    <color name="bottomsheetIconCharCodeTextColor">#FAFAFA</color>
+    <color name="bottomsheetTitleTextColor">#fafafa</color>
+    <color name="bottomsheetTitle2TextColor">#a5d6a7</color>
 </resources>

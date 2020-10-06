@@ -12,9 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
@@ -34,6 +32,7 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
     public static final String JSON_RATES = "JSON_Rates";
     public static final String FIRST_START = "firstStart";
     public static final String LAST_UPDATE_DATETIME = "lastUpdate";
+    public static final String PREVIOUS_UPDATE_DATETIME = "previousUpdate";
     ArrayList<CoursesOfCurrency> courseList;
     ArrayList<CurrencyRate> currencyRateList;
     TextView statusApp;
@@ -124,10 +123,10 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();
             }
-        }, 0);
+        }, 300);
     }
     private void OfflineSnackBar(String message){
-        ViewGroup view = (ViewGroup) findViewById(android.R.id.content);
+        ViewGroup view = findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_INDEFINITE);
         View snackView = snackbar.getView();
         snackView.setBackgroundColor(getResources().getColor(R.color.colorREDForSnackBar, getApplicationContext().getTheme()));
@@ -136,7 +135,7 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
     }
 
     private void OnlineSnackBar(){
-        ViewGroup view = (ViewGroup) findViewById(android.R.id.content);
+        ViewGroup view = findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_INDEFINITE);
         View snackView = snackbar.getView();
         snackView.setBackgroundColor(getResources().getColor(R.color.colorGREENForSnackBar, getApplicationContext().getTheme()));
@@ -165,6 +164,7 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
             ed.putString(JSON_COURSES, jsonCourses);
             ed.putString(JSON_RATES,jsonRates);
             ed.putString(LAST_UPDATE_DATETIME, data.getDateUpdate());
+            ed.putString(PREVIOUS_UPDATE_DATETIME, data.getDatePreviousUpdate());
             ed.apply();
         } catch (InterruptedException | TimeoutException e) {
             e.printStackTrace();

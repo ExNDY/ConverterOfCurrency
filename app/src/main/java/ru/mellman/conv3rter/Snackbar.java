@@ -1,6 +1,5 @@
 package ru.mellman.conv3rter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.ContentViewCallback;
 
-public class Snackbar extends BaseTransientBottomBar<Snackbar> {
+public class Snackbar extends com.google.android.material.snackbar.BaseTransientBottomBar<Snackbar> {
 
     /**
      * Constructor for the transient bottom bar.
@@ -36,14 +36,14 @@ public class Snackbar extends BaseTransientBottomBar<Snackbar> {
     }
 
     public Snackbar setText(CharSequence text) {
-        TextView textView = (TextView) getView().findViewById(R.id.snackbar_text);
+        TextView textView = getView().findViewById(R.id.snackbar_text);
         textView.setText(text);
         return this;
     }
 
     public Snackbar setAction(CharSequence text, final View.OnClickListener listener) {
         Button actionView;
-        actionView = (Button) getView().findViewById(R.id.snackbar_action);
+        actionView = getView().findViewById(R.id.snackbar_action);
         actionView.setText(text);
         actionView.setVisibility(View.VISIBLE);
         actionView.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +57,7 @@ public class Snackbar extends BaseTransientBottomBar<Snackbar> {
         return this;
     }
 
-    private static class ContentViewCallback implements BaseTransientBottomBar.ContentViewCallback {
+    private static class ContentViewCallback implements com.google.android.material.snackbar.ContentViewCallback {
 
         private View content;
 
