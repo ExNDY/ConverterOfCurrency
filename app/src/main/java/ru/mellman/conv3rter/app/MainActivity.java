@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
@@ -210,14 +212,17 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CoursesOfCurrency o = (CoursesOfCurrency) _listOfCurrencyRates.getItemAtPosition(position);
                 String s = o.getId() + o.getCharCode() + o.getName() + Function.getDecimalToFormat(o.getCourseValue()) + Function.getDecimalToFormat(o.getDifference());
-                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog();
+                bottomSheetDialog = new BottomSheetDialog();
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("currency", o);
                 SharedPreferences sp = getSharedPreferences(PREF, Context.MODE_PRIVATE);
                 bundle.putString("date_last_update", sp.getString(LAST_UPDATE_DATETIME,""));
                 bundle.putString("date_previous_update", sp.getString(PREVIOUS_UPDATE_DATETIME,""));
                 bottomSheetDialog.setArguments(bundle);
-                bottomSheetDialog.show(getSupportFragmentManager(), "Modal");
+                if(getSupportFragmentManager().findFragmentByTag(BottomSheetDialog.TAG)==null){
+                    bottomSheetDialog.show(getSupportFragmentManager(), BottomSheetDialog.TAG);
+                }
+
             }
         });
         View.OnClickListener listener = new View.OnClickListener() {

@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
 
 public class BottomSheetDialog extends BottomSheetDialogFragment {
+    public static final String TAG = BottomSheetDialog.class.getSimpleName();;
     private TextView bs_code;
     private TextView bs_name;
     private TextView bs_current_value;
@@ -32,7 +33,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
     private Context context;
 
     @Override
-    public void onAttach(Context context){
+    public void onAttach(@NonNull Context context){
         super.onAttach(context);
         this.context = context;
 
@@ -49,7 +50,8 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
         if (coursesOfCurrency!=null){
             bs_code.setText(coursesOfCurrency.getCharCode());
             bs_code.setSelected(true);
-            bs_name.setText(coursesOfCurrency.getName());
+            String title = coursesOfCurrency.getNominal()+" "+ coursesOfCurrency.getName();
+            bs_name.setText(title);
             bs_current_value.setText(Function.getDecimalToFormat(coursesOfCurrency.getCourseValue()));
             bs_previous_value.setText(Function.getDecimalToFormat(coursesOfCurrency.getPreviousValue()));
             bs_last_update_date.setText(Function.getFormatDate(bundle.getString("date_last_update")));

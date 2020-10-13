@@ -45,7 +45,6 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
             holder.currentValue = row.findViewById(R.id.currency_value);
             holder.difValue = row.findViewById(R.id.difference_value);
             holder.nominal = row.findViewById(R.id.nominal_of_currency);
-            holder.differenceImage = row.findViewById(R.id.difImage);
             row.setTag(holder);
         }
         else{
@@ -59,18 +58,16 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
         double dif = c.getDifference();
         if (dif>0){
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseGREEN));
-            holder.differenceImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_up));
         }
         if (dif<0){
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseRED));
-            holder.differenceImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_down));
         }
         if (dif==0.0){
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseGREY));
         }
         String difValue = new DecimalFormat("#0.0000").format(dif);
         holder.difValue.setText(difValue);
-        String nominalStr = context.getString(R.string.nominal)+" "+c.getNominal()+c.getCharCode();
+        String nominalStr = "Nominal:"+" "+c.getNominal()+c.getCharCode();
         holder.nominal.setText(nominalStr);
         return row;
     }

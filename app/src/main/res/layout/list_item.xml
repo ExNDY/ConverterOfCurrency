@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="70dp"
     android:orientation="horizontal"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
+    android:layout_margin="10dp"
     >
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/code"
@@ -16,66 +16,68 @@
         android:gravity="center"
         android:textStyle="bold"
         android:text="@string/code_of_currency"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/currencyName"
+    <LinearLayout
+        android:layout_gravity="center_vertical"
         android:layout_weight="4"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:textSize="14sp"
-        android:textColor="@color/textColor"
-        android:gravity="fill_vertical"
-        android:textStyle="normal"
-        android:text="@string/name_of_currency"
-        android:ellipsize="end"
-        />
-    <LinearLayout
-        android:layout_weight="2"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
         android:orientation="vertical">
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_weight="2"
+            android:id="@+id/nominal_of_currency"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textStyle="normal"
+            android:textSize="12sp"
+            android:textColor="@color/colorNominal"
+            android:gravity="start|bottom"
+            android:text="@string/nominal"
+            tools:ignore="NestedWeights" />
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_weight="5"
+            android:id="@+id/currencyName"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textSize="14sp"
+            android:textColor="@color/textColor"
+            android:gravity="start|top"
+            android:textStyle="normal"
+            android:text="@string/name_of_currency"
+            android:ellipsize="end"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_weight="3"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        >
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/currency_value"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:textStyle="normal"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:textColor="@color/textColor"
-            android:gravity="center_horizontal"
+            android:gravity="bottom|end"
             android:text="@string/value"/>
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/nominal_of_currency"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:textStyle="normal"
-            android:textSize="12sp"
-            android:textColor="@color/colorNominal"
-            android:gravity="center_horizontal"
-            android:text="@string/nominal"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <ImageView
-            android:id="@+id/difImage"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:layout_gravity="end"/>
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/difference_value"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="30dp"
             android:textStyle="normal"
-            android:textSize="12sp"
-            android:textAlignment="center"
-            android:gravity="center"
+            android:textSize="16sp"
+            android:textAlignment="gravity"
+            android:gravity="end|top"
             android:text="@string/value"/>
+
     </LinearLayout>
+
+
 
 </LinearLayout>
 
