@@ -6,11 +6,12 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -19,14 +20,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ import ru.mellman.conv3rter.BottomSheetDialog;
 import ru.mellman.conv3rter.DataObject;
 import ru.mellman.conv3rter.DataTasks;
 import ru.mellman.conv3rter.Function;
+import ru.mellman.conv3rter.ConverterPreferenceManager;
 import ru.mellman.conv3rter.R;
 import ru.mellman.conv3rter.Snackbar;
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
@@ -43,11 +42,11 @@ import ru.mellman.conv3rter.data_adapters.CoursesOfCurrencyAdapter;
 import ru.mellman.conv3rter.data_adapters.CurrencyRate;
 import ru.mellman.conv3rter.data_adapters.CurrencyRateAdapter;
 
-public class MainActivity extends AppCompatActivity {
-    private TextView _valueFrom, _valueTo;
-    private ListView _listOfCurrencyRates;
-    private Spinner _spinnerFrom, _spinnerTo;
-    private SwitchMaterial _switchThemeMaterial;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private TextView currencyValueFrom, currencyValueTo;
+    private ListView listOfCurrencyRates;
+    private Spinner spinnerFrom, spinnerTo;
+    private SwitchMaterial switchThemeMaterial;
     private ImageButton btnSwitchCurrency;
 
     public static final String PREF = "converterPreferences";
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String LAST_UPDATE_DATETIME = "lastUpdate";
     public static final String PREVIOUS_UPDATE_DATETIME = "previousUpdate";
 
-    private int _selectedPosFrom, _selectedPosTo;
     ArrayList<CoursesOfCurrency> currencyList;
     CoursesOfCurrencyAdapter currencyListAdapter;
     ArrayList<CurrencyRate> currencyRateList;
@@ -77,81 +75,79 @@ public class MainActivity extends AppCompatActivity {
             currencyRateList = getIntent().getParcelableArrayListExtra(JSON_RATES);
         }
         if (savedInstanceState != null) {
-            _valueFrom.setText(savedInstanceState.getString("AreaFrom"));
+            currencyValueFrom.setText(savedInstanceState.getString("AreaFrom"));
 
             currencyList = savedInstanceState.getParcelableArrayList("courseList");
             currencyRateList = savedInstanceState.getParcelableArrayList("currencyRates");
         }
         currencyRateListAdapter = new CurrencyRateAdapter(this, currencyRateList);
-        _spinnerFrom.setAdapter(currencyRateListAdapter);
-        _spinnerTo.setAdapter(currencyRateListAdapter);
-        loadSpinnerPos();
+        spinnerFrom.setAdapter(currencyRateListAdapter);
+        spinnerTo.setAdapter(currencyRateListAdapter);
+        ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
+        spinnerFrom.setSelection(converterPreferenceManager.getSpinnerPosFrom(), true);
+        spinnerTo.setSelection(converterPreferenceManager.getSpinnerPosTo(),true);
         currencyListAdapter = new CoursesOfCurrencyAdapter(this, R.layout.list_item, currencyList);
-        _listOfCurrencyRates.setAdapter(currencyListAdapter);
+        listOfCurrencyRates.setAdapter(currencyListAdapter);
     }
 
     protected void onResume() {
         super.onResume();
         if (getIntent().hasExtra("fromValue")) {
-            _valueFrom.setText(getIntent().getStringExtra("fromValue"));
+            currencyValueFrom.setText(getIntent().getStringExtra("fromValue"));
         }
     }
 
     protected void onPause() {
         super.onPause();
+        Intent main = getIntent();
+        main.putExtra("fromValue", currencyValueFrom.getText().toString());
     }
 
     @Override
     public void recreate() {
         Intent main = getIntent();
-        main.putExtra("fromValue", _valueFrom.getText().toString());
+        main.putExtra("fromValue", currencyValueFrom.getText().toString());
         startActivity(main);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         finish();
-
-
     }
 
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("AreaFrom", _valueFrom.getText().toString());
+        outState.putString("AreaFrom", currencyValueFrom.getText().toString());
         outState.putParcelableArrayList("courseList", currencyList);
         outState.putParcelableArrayList("currencyRates", currencyRateList);
-        outState.putInt("selectedPosTo", _selectedPosTo);
-        outState.putInt("selectedPosFrom", _selectedPosFrom);
+        outState.putInt("selectedPosTo", spinnerFrom.getSelectedItemPosition());
+        outState.putInt("selectedPosFrom", spinnerTo.getSelectedItemPosition());
     }
 
     void initSpinner() {
-        AdapterView.OnItemSelectedListener itemSelectedListenerFrom = new AdapterView.OnItemSelectedListener() {
+        spinnerFrom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                _selectedPosFrom = (int) parent.getItemIdAtPosition(position);
-                saveSpinnerPos(_selectedPosFrom, _selectedPosTo);
-                calculateCourseBy(_valueFrom.getText().toString());
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
+                converterPreferenceManager.saveSpinnerPosFrom(i);
+                calculateCourseBy(currencyValueFrom.getText().toString());
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-        };
-        _spinnerFrom.setOnItemSelectedListener(itemSelectedListenerFrom);
-
-
-        AdapterView.OnItemSelectedListener itemSelectedListenerTo = new AdapterView.OnItemSelectedListener() {
+        });
+        spinnerTo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                _selectedPosTo = (int) parent.getItemIdAtPosition(position);
-                saveSpinnerPos(_selectedPosFrom, _selectedPosTo);
-                calculateCourseBy(_valueFrom.getText().toString());
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
+                converterPreferenceManager.saveSpinnerPosTo(i);
+                calculateCourseBy(currencyValueFrom.getText().toString());
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-        };
-        _spinnerTo.setOnItemSelectedListener(itemSelectedListenerTo);
+        });
     }
 
 
@@ -159,11 +155,11 @@ public class MainActivity extends AppCompatActivity {
         if (!editTextFrom.equals("")) {
             try {
                 double _val = Double.parseDouble(editTextFrom);
-                _val = Function.convert(currencyRateList.get(_selectedPosFrom).getRate(), currencyRateList.get(_selectedPosTo).getRate(), _val);
+                _val = Function.convert(currencyRateList.get(spinnerFrom.getSelectedItemPosition()).getRate(), currencyRateList.get(spinnerTo.getSelectedItemPosition()).getRate(), _val);
                 String result = Function.getDecimalToFormat(_val);
-                _valueTo.setText(result);
+                currencyValueTo.setText(result);
             } catch (Exception e) {
-                _valueTo.setText(getResources().getString(R.string.error));
+                currencyValueTo.setText(getResources().getString(R.string.error));
             }
 
         }
@@ -184,22 +180,25 @@ public class MainActivity extends AppCompatActivity {
         Button btnDot = findViewById(R.id.buttonDot);
         Button btnDel = findViewById(R.id.buttonDel);
         btnSwitchCurrency = findViewById(R.id.switchFromToButton);
-        _switchThemeMaterial = findViewById(R.id.dayNightSwitcher);
-        _spinnerFrom = findViewById(R.id.spinnerFrom);
-        _spinnerTo = findViewById(R.id.spinnerTo);
-        _valueFrom = findViewById(R.id.valueFrom);
-        _valueTo = findViewById(R.id.valueTo);
-        _listOfCurrencyRates = findViewById(R.id.currencyListView);
+        switchThemeMaterial = findViewById(R.id.dayNightSwitcher);
+        spinnerFrom = findViewById(R.id.spinnerFrom);
+        spinnerTo = findViewById(R.id.spinnerTo);
+        currencyValueFrom = findViewById(R.id.valueFrom);
+        currencyValueTo = findViewById(R.id.valueTo);
+        listOfCurrencyRates = findViewById(R.id.currencyListView);
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
-        _valueTo.setOnLongClickListener(new View.OnLongClickListener() {
+
+        pullToRefresh.setColorSchemeColors(getResources().getColor(R.color.PullToRefreshColor, getApplicationContext().getTheme()));
+        pullToRefresh.setProgressBackgroundColorSchemeColor(getResources().getColor(R.color.PullToRefreshProgressBarColor, getApplicationContext().getTheme()));
+        currencyValueTo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 SharedPreferences sharedPreferences = getSharedPreferences(PREF, MODE_PRIVATE);
-                CurrencyRate from = (CurrencyRate) _spinnerFrom.getSelectedItem();
-                CurrencyRate to = (CurrencyRate) _spinnerTo.getSelectedItem();
-                String buf = getResources().getString(R.string.clipboardstring_1) + " " + _valueFrom.getText().toString() + from.getCharCode()
-                        + " " + getResources().getString(R.string.clipboardstring_2) + " " + _valueTo.getText().toString()
+                CurrencyRate from = (CurrencyRate) spinnerFrom.getSelectedItem();
+                CurrencyRate to = (CurrencyRate) spinnerTo.getSelectedItem();
+                String buf = getResources().getString(R.string.clipboardstring_1) + " " + currencyValueFrom.getText().toString() + from.getCharCode()
+                        + " " + getResources().getString(R.string.clipboardstring_2) + " " + currencyValueTo.getText().toString()
                         + to.getCharCode() + " " + getResources().getString(R.string.clipboardstring_3)
                         + Function.getDate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
                 Function.copyToClipboard(buf, getApplicationContext());
@@ -207,10 +206,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        _listOfCurrencyRates.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listOfCurrencyRates.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CoursesOfCurrency o = (CoursesOfCurrency) _listOfCurrencyRates.getItemAtPosition(position);
+                CoursesOfCurrency o = (CoursesOfCurrency) listOfCurrencyRates.getItemAtPosition(position);
                 String s = o.getId() + o.getCharCode() + o.getName() + Function.getDecimalToFormat(o.getCourseValue()) + Function.getDecimalToFormat(o.getDifference());
                 bottomSheetDialog = new BottomSheetDialog();
                 Bundle bundle = new Bundle();
@@ -225,68 +224,24 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (v.getId() == R.id.button0) {
-                    InputNum(0);
-                }
-                if (v.getId() == R.id.button1) {
-                    InputNum(1);
-                }
-                if (v.getId() == R.id.button2) {
-                    InputNum(2);
-                }
-                if (v.getId() == R.id.button3) {
-                    InputNum(3);
-                }
-                if (v.getId() == R.id.button4) {
-                    InputNum(4);
-                }
-                if (v.getId() == R.id.button5) {
-                    InputNum(5);
-                }
-                if (v.getId() == R.id.button6) {
-                    InputNum(6);
-                }
-                if (v.getId() == R.id.button7) {
-                    InputNum(7);
-                }
-                if (v.getId() == R.id.button8) {
-                    InputNum(8);
-                }
-                if (v.getId() == R.id.button9) {
-                    InputNum(9);
-                }
-                if (v.getId() == R.id.buttonDot) {
-                    InputDot();
-                }
-                if (v.getId() == R.id.buttonDel) {
-                    DelNumber();
-                }
-                if (v.getId() == R.id.switchFromToButton) {
-                    SwitchCurrency();
-                }
-            }
-        };
-        btn0.setOnClickListener(listener);
-        btn1.setOnClickListener(listener);
-        btn2.setOnClickListener(listener);
-        btn3.setOnClickListener(listener);
-        btn4.setOnClickListener(listener);
-        btn5.setOnClickListener(listener);
-        btn6.setOnClickListener(listener);
-        btn7.setOnClickListener(listener);
-        btn8.setOnClickListener(listener);
-        btn9.setOnClickListener(listener);
-        btnDot.setOnClickListener(listener);
-        btnDel.setOnClickListener(listener);
-        btnSwitchCurrency.setOnClickListener(listener);
+        btn0.setOnClickListener(this);
+        btn1.setOnClickListener(this);
+        btn2.setOnClickListener(this);
+        btn3.setOnClickListener(this);
+        btn4.setOnClickListener(this);
+        btn5.setOnClickListener(this);
+        btn6.setOnClickListener(this);
+        btn7.setOnClickListener(this);
+        btn8.setOnClickListener(this);
+        btn9.setOnClickListener(this);
+        btnDot.setOnClickListener(this);
+        btnDel.setOnClickListener(this);
+        btnSwitchCurrency.setOnClickListener(this);
         btnDel.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                _valueFrom.setText("0");
-                calculateCourseBy(_valueFrom.getText().toString());
+                currencyValueFrom.setText("0");
+                calculateCourseBy(currencyValueFrom.getText().toString());
                 return true;
             }
         });
@@ -298,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                 pullToRefresh.setRefreshing(false);
             }
         });
-        _switchThemeMaterial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        switchThemeMaterial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences sharedPreferences = getSharedPreferences(PREF, MODE_PRIVATE);
@@ -315,14 +270,33 @@ public class MainActivity extends AppCompatActivity {
                 ed.apply();
             }
         });
-        _valueFrom.setShowSoftInputOnFocus(false);
+
+        currencyValueFrom.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                calculateCourseBy(currencyValueFrom.getText().toString());
+            }
+        });
+        currencyValueFrom.setShowSoftInputOnFocus(false);
+
+
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, MODE_PRIVATE);
         checkThemeMod(sharedPreferences);
     }
 
     private void InputNum(int num) {
-        String txt = _valueFrom.getText().toString();
+        String txt = currencyValueFrom.getText().toString();
         int length = txt.length();
         if (length < 15) {
             if (txt.contains(".")) {
@@ -331,10 +305,10 @@ public class MainActivity extends AppCompatActivity {
                 if (dif <= 2) {
                     if (txt.equals("0")) {
                         String text = String.valueOf(num);
-                        _valueFrom.setText(text);
+                        currencyValueFrom.setText(text);
                     } else {
                         String text = txt + num;
-                        _valueFrom.setText(text);
+                        currencyValueFrom.setText(text);
                     }
                 } else {
                     SnackBarShow(getString(R.string.after_dots_symbol_limit));
@@ -342,13 +316,12 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 if (txt.equals("0")) {
                     String text = String.valueOf(num);
-                    _valueFrom.setText(text);
+                    currencyValueFrom.setText(text);
                 } else {
                     String text = txt + num;
-                    _valueFrom.setText(text);
+                    currencyValueFrom.setText(text);
                 }
             }
-            calculateCourseBy(_valueFrom.getText().toString());
         } else {
             SnackBarShow(getString(R.string.string_limit));
         }
@@ -356,41 +329,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void InputDot() {
-        String txt = _valueFrom.getText().toString();
+        String txt = currencyValueFrom.getText().toString();
         int checkDot = txt.indexOf(".");
         if (checkDot == -1) {
             String text = txt + ".";
-            _valueFrom.setText(text);
-            calculateCourseBy(_valueFrom.getText().toString());
+            currencyValueFrom.setText(text);
         } else {
             SnackBarShow(getString(R.string.dot_in_line));
         }
     }
 
     private void DelNumber() {
-        if (_valueFrom.length() != 0) {
-            if (_valueFrom.length() - 1 == 0) {
-                _valueFrom.setText("0");
+        if (currencyValueFrom.length() != 0) {
+            if (currencyValueFrom.length() - 1 == 0) {
+                currencyValueFrom.setText("0");
             } else {
-                String txt = _valueFrom.getText().toString();
-                _valueFrom.setText(txt.substring(0, txt.length() - 1));
+                String txt = currencyValueFrom.getText().toString();
+                currencyValueFrom.setText(txt.substring(0, txt.length() - 1));
             }
         }
-        calculateCourseBy(_valueFrom.getText().toString());
-    }
-
-    private void saveSpinnerPos(int selectedPosFrom, int selectedPosTo) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putInt("fromPos", selectedPosFrom);
-        ed.putInt("toPos", selectedPosTo);
-        ed.apply();
-    }
-
-    private void loadSpinnerPos() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        _spinnerFrom.setSelection(sharedPreferences.getInt("fromPos", 34));
-        _spinnerTo.setSelection(sharedPreferences.getInt("toPos", 11));
     }
 
     private void SwitchCurrency() {
@@ -398,34 +355,34 @@ public class MainActivity extends AppCompatActivity {
         Animation rotate180_anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate180_anim);
         btnSwitchCurrency.startAnimation(rotate180_anim);
 
-        int posFrom = _spinnerFrom.getSelectedItemPosition();
-        int posTo = _spinnerTo.getSelectedItemPosition();
-        _spinnerFrom.setSelection(posTo, true);
-        _spinnerTo.setSelection(posFrom, true);
+        int posFrom = spinnerFrom.getSelectedItemPosition();
+        int posTo = spinnerTo.getSelectedItemPosition();
+        spinnerFrom.setSelection(posTo, true);
+        spinnerTo.setSelection(posFrom, true);
 
 
-        if (_valueFrom.length() != 0) {
+        if (currencyValueFrom.length() != 0) {
             try {
-                double val = Double.parseDouble(_valueTo.getText().toString());
+                double val = Double.parseDouble(currencyValueTo.getText().toString());
                 String s = Function.getDecimalToFormat(val);
-                _valueTo.setText("");
-                _valueFrom.setText(s);
+                currencyValueTo.setText("");
+                currencyValueFrom.setText(s);
             } catch (Exception e) {
-                _valueTo.setText(getResources().getString(R.string.error));
+                currencyValueTo.setText(getResources().getString(R.string.error));
             }
 
         }
     }
 
-    private void checkThemeMod(SharedPreferences sharedPreferences) {
+    private void checkThemeMod(@NonNull SharedPreferences sharedPreferences) {
         if (sharedPreferences.getBoolean("DayNight_Mode", false)) {
-            _switchThemeMaterial.setChecked(true);
+            switchThemeMaterial.setChecked(true);
         } else {
-            _switchThemeMaterial.setChecked(false);
+            switchThemeMaterial.setChecked(false);
         }
     }
 
-    private void checkUpdate(SharedPreferences sharedPreferences) {
+    private void checkUpdate(@NonNull SharedPreferences sharedPreferences) {
         boolean check = Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
         if (check && Function.isOnline(getApplicationContext())) {
             try {
@@ -467,6 +424,49 @@ public class MainActivity extends AppCompatActivity {
         snackView.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorOfSnackBar, getApplicationContext().getTheme()));
         snackbar.setText(message);
         snackbar.show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.button0) {
+            InputNum(0);
+        }
+        if (view.getId() == R.id.button1) {
+            InputNum(1);
+        }
+        if (view.getId() == R.id.button2) {
+            InputNum(2);
+        }
+        if (view.getId() == R.id.button3) {
+            InputNum(3);
+        }
+        if (view.getId() == R.id.button4) {
+            InputNum(4);
+        }
+        if (view.getId() == R.id.button5) {
+            InputNum(5);
+        }
+        if (view.getId() == R.id.button6) {
+            InputNum(6);
+        }
+        if (view.getId() == R.id.button7) {
+            InputNum(7);
+        }
+        if (view.getId() == R.id.button8) {
+            InputNum(8);
+        }
+        if (view.getId() == R.id.button9) {
+            InputNum(9);
+        }
+        if (view.getId() == R.id.buttonDot) {
+            InputDot();
+        }
+        if (view.getId() == R.id.buttonDel) {
+            DelNumber();
+        }
+        if (view.getId() == R.id.switchFromToButton) {
+            SwitchCurrency();
+        }
     }
 }
 

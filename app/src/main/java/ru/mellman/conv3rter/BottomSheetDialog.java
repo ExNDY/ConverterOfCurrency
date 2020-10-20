@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 
 import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
 
@@ -32,6 +33,12 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
     private MaterialTextView bs_diff_value;
     private Context context;
 
+    @Override
+    public void onActivityCreated(Bundle arg0) {
+        super.onActivityCreated(arg0);
+        Objects.requireNonNull(getDialog()).getWindow()
+                .getAttributes().windowAnimations = R.style.DialogAnimation;
+    }
     @Override
     public void onAttach(@NonNull Context context){
         super.onAttach(context);
