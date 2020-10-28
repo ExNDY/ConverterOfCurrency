@@ -3,18 +3,20 @@ package ru.mellman.conv3rter.parse;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import ru.mellman.conv3rter.app.MainActivity;
-import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
-import ru.mellman.conv3rter.data_adapters.CurrencyRate;
+import ru.mellman.conv3rter.activity.MainActivity;
+import ru.mellman.conv3rter.CoursesOfCurrency;
+import ru.mellman.conv3rter.data_course_of_currency.CurrencyRate;
 
 public class JSONObjParser {
-    private static CoursesOfCurrency getCourse(JSONObject response) throws JSONException{
+    private static CoursesOfCurrency getCourse(JSONObject response) throws JSONException {
         String id = response.getString("ID");
         String charName = response.getString("CharCode");
         String name = response.getString("Name");
@@ -24,17 +26,19 @@ public class JSONObjParser {
         return new CoursesOfCurrency(id, charName, name, nominal, course, previous);
     }
 
-    private static CurrencyRate getRate(JSONObject response, String key) throws JSONException{
+    @NonNull
+    private static CurrencyRate getRate(@NonNull JSONObject response, String key) throws JSONException {
         Double CourseValue = response.getDouble(key);
         return new CurrencyRate(key, CourseValue);
     }
-    public static ArrayList<CoursesOfCurrency> parseJSONToCourseList(String jSONObj){
+
+    public static ArrayList<CoursesOfCurrency> parseJSONToCourseList(String jSONObj) {
         ArrayList<CoursesOfCurrency> courseList = new ArrayList<>();
         try {
             JSONObject CurrencyObj = new JSONObject(jSONObj);
             JSONObject allCurrency = (JSONObject) CurrencyObj.get("Valute");
             Iterator<String> keyIterator = allCurrency.keys();
-            while (keyIterator.hasNext()){
+            while (keyIterator.hasNext()) {
                 String key = keyIterator.next();
                 courseList.add(getCourse(allCurrency.getJSONObject(key)));
             }

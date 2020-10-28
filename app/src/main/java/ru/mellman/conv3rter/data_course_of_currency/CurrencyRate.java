@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter.data_adapters;
+package ru.mellman.conv3rter.data_course_of_currency;
 import android.os.Parcel;
 import android.os.Parcelable;
 

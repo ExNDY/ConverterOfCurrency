@@ -15,13 +15,10 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textview.MaterialTextView;
 
-import java.text.DecimalFormat;
 import java.util.Objects;
 
-import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
-
 public class BottomSheetDialog extends BottomSheetDialogFragment {
-    public static final String TAG = BottomSheetDialog.class.getSimpleName();;
+    public static final String TAG = BottomSheetDialog.class.getSimpleName();
     private TextView bs_code;
     private TextView bs_name;
     private TextView bs_current_value;

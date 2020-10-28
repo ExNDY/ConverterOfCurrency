@@ -1,129 +1,157 @@
-package ru.mellman.conv3rter.app;
+package ru.mellman.conv3rter.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.Observer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import ru.mellman.conv3rter.ConverterPreferenceManager;
 import ru.mellman.conv3rter.DataTasks;
 import ru.mellman.conv3rter.Function;
-import ru.mellman.conv3rter.NetworkChangeReceiver;
+import ru.mellman.conv3rter.NetworkConnectionMonitor;
 import ru.mellman.conv3rter.Snackbar;
-import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
-import ru.mellman.conv3rter.data_adapters.CurrencyRate;
+import ru.mellman.conv3rter.Variables;
+import ru.mellman.conv3rter.CoursesOfCurrency;
+import ru.mellman.conv3rter.data_course_of_currency.Courses;
+import ru.mellman.conv3rter.data_course_of_currency.CurrencyRate;
 import ru.mellman.conv3rter.DataObject;
 import ru.mellman.conv3rter.R;
+import ru.mellman.conv3rter.data_course_of_currency.DataLists;
 
-public class SplashScreenActivity extends AppCompatActivity implements NetworkChangeReceiver.NetworkChangeReceiverListener {
+public class SplashScreenActivity extends AppCompatActivity {
     public static final String PREF = "converterPreferences";
     public static final String JSON_COURSES = "JSON_Courses";
     public static final String JSON_RATES = "JSON_Rates";
-    public static final String FIRST_START = "firstStart";
+    public static final String COURSES = "CoursesList";
     public static final String LAST_UPDATE_DATETIME = "lastUpdate";
     public static final String PREVIOUS_UPDATE_DATETIME = "previousUpdate";
     ArrayList<CoursesOfCurrency> courseList;
     ArrayList<CurrencyRate> currencyRateList;
+
+    ArrayList<Courses> coursesArrayList;
+
     TextView statusApp;
-    private NetworkChangeReceiver networkChangeReceiver;
+
+    private NetworkConnectionMonitor connectionMonitor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+        String s = "asD";
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        networkChangeReceiver = new NetworkChangeReceiver(this);
-        if (sharedPreferences.getBoolean("DayNight_Mode", false)){
+        connectionMonitor = new NetworkConnectionMonitor(getApplicationContext());
+        connectionMonitor.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isConnected) {
+                if (isConnected) {
+                    Online();
+                } else {
+                    Offline();
+                }
+            }
+        });
+
+        if (sharedPreferences.getBoolean("DayNight_Mode", false)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        else {
+        } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         statusApp = findViewById(R.id.textSplashScreen_statusApp);
     }
+
+
     @Override
     protected void onStart(){
         super.onStart();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, filter);
-    }
-    @Override
-    protected void onStop(){
-        super.onStop();
     }
 
+
     @Override
-    protected void onPause(){
-        unregisterReceiver(networkChangeReceiver);
+    protected void onPause() {
+        if (Variables.isRegistered) {
+            connectionMonitor.unregisterDefaultNetworkCallback();
+            Variables.isRegistered = false;
+        }
         super.onPause();
-
     }
+
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
+        if (!Variables.isRegistered) {
+            connectionMonitor.registerDefaultNetworkCallback();
+            Variables.isRegistered = true;
+        }
     }
 
-    @Override
-    public void isNetworkOffline() {
+    private void Offline() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        if (sharedPreferences.getBoolean(FIRST_START,true)){
+        ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
+        if (preferenceManager.getFirstLaunch()) {
             OfflineSnackBar(getResources().getString(R.string.offline));
             statusApp.setText(R.string.first_start_error);
-        }
-        else{
-            if(!sharedPreferences.getString(JSON_COURSES, "").equals("") && !sharedPreferences.getString(JSON_RATES, "").equals("")){
+        } else {
+            if (!sharedPreferences.getString(JSON_COURSES, "").equals("") && !sharedPreferences.getString(JSON_RATES, "").equals("")) {
                 loadData();
-                start();
-                unregisterReceiver(networkChangeReceiver);
-            }
-            else {
+                startMainActivity();
+            } else {
                 OfflineSnackBar(getResources().getString(R.string.offline));
                 statusApp.setText(R.string.database_error);
             }
         }
     }
 
-    @Override
-    public void isNetworkOnline() {
+    private void Online() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        if(sharedPreferences.getBoolean(FIRST_START,true)){
-            downloadData();
-            firstLaunch(sharedPreferences);
-        }
-        else {
-            if(Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME,"")) || sharedPreferences.getString(JSON_COURSES, "").equals("") || sharedPreferences.getString(JSON_RATES, "").equals("")){
 
+        ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
+        if (preferenceManager.getFirstLaunch()) {
+            downloadData();
+            preferenceManager.FirstLaunchSettings();
+        } else {
+            if (Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, "")) || sharedPreferences.getString(JSON_COURSES, "").equals("") || sharedPreferences.getString(JSON_RATES, "").equals("")) {
                 downloadData();
-            }
-            else {
+            } else {
                 loadData();
             }
         }
-        start();
+        startMainActivity();
     }
 
-    private void start(){
-        new Handler().postDelayed(new Runnable() {
+
+    private void startMainActivity() {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent main = new Intent(SplashScreenActivity.this, MainActivity.class);
+                coursesArrayList = DataTasks.getCourseList(getApplicationContext());
+                main.putParcelableArrayListExtra(COURSES, coursesArrayList);
                 main.putParcelableArrayListExtra(JSON_COURSES, courseList);
                 main.putParcelableArrayListExtra(JSON_RATES, currencyRateList);
                 startActivity(main);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish();
             }
-        }, 300);
+        }, 250);
+
+
     }
     private void OfflineSnackBar(String message){
         ViewGroup view = findViewById(android.R.id.content);
@@ -141,15 +169,6 @@ public class SplashScreenActivity extends AppCompatActivity implements NetworkCh
         snackView.setBackgroundColor(getResources().getColor(R.color.colorGREENForSnackBar, getApplicationContext().getTheme()));
         snackbar.setText("Online");
         snackbar.show();
-    }
-
-    private void firstLaunch(SharedPreferences sharedPreferences){
-        SharedPreferences.Editor ed = sharedPreferences.edit();
-        ed.putBoolean(FIRST_START,false);
-        ed.putInt("fromPos",34);
-        ed.putInt("toPos",10);
-        ed.putBoolean("DayNight_Mode",false);
-        ed.apply();
     }
 
     private void downloadData(){

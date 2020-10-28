@@ -40,4 +40,22 @@
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
+
+    <style name="NumPad_DIGITS" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="cornerRadius">@null</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:backgroundTint">@color/elementBackground</item>
+    </style>
 </resources>

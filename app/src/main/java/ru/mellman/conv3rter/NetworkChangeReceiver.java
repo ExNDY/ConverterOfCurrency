@@ -7,26 +7,29 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 public final class NetworkChangeReceiver extends BroadcastReceiver {
-    private NetworkChangeReceiverListener listener;
-    public NetworkChangeReceiver(NetworkChangeReceiverListener listener){
+    private final NetworkChangeReceiverListener listener;
+
+    public NetworkChangeReceiver(NetworkChangeReceiverListener listener) {
         this.listener = listener;
     }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            if(isOnline(context)){
+            if (isOnline(context)) {
                 listener.isNetworkOnline();
-            }
-            else {
+            } else {
                 listener.isNetworkOffline();
             }
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
-    private static boolean isOnline(Context context) {
+
+    private static boolean isOnline(@NonNull Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());

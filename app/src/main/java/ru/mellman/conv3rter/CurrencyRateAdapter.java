@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter.data_adapters;
+package ru.mellman.conv3rter;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textview.MaterialTextView;
 import java.util.ArrayList;
 
-import ru.mellman.conv3rter.R;
+import ru.mellman.conv3rter.data_course_of_currency.CurrencyRate;
 
 public class CurrencyRateAdapter extends ArrayAdapter<CurrencyRate> {
 

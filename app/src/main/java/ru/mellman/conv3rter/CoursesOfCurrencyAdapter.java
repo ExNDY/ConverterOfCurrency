@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter.data_adapters;
+package ru.mellman.conv3rter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,26 +17,25 @@ import com.google.android.material.textview.MaterialTextView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import ru.mellman.conv3rter.R;
-
 public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
-    private Context context;
-    private int layoutResourceId;
-    private ArrayList<CoursesOfCurrency> data;
+    private final Context context;
+    private final int layoutResourceId;
+    private final ArrayList<CoursesOfCurrency> data;
 
-    public CoursesOfCurrencyAdapter(@NonNull Context context,@LayoutRes int layoutResourceId, ArrayList<CoursesOfCurrency> data){
-        super(context,layoutResourceId,data);
+    public CoursesOfCurrencyAdapter(@NonNull Context context, @LayoutRes int layoutResourceId, ArrayList<CoursesOfCurrency> data) {
+        super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
-        this.context =context;
+        this.context = context;
         this.data = data;
     }
+
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent){
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
         CoursesOfCurrencyHolder holder;
-        if(row==null){
-            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+        if (row == null) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new CoursesOfCurrencyHolder();
@@ -56,18 +55,27 @@ public class CoursesOfCurrencyAdapter extends ArrayAdapter<CoursesOfCurrency> {
         String currentValueStr = c.getCourseValue()+"₽";
         holder.currentValue.setText(currentValueStr);
         double dif = c.getDifference();
-        if (dif>0){
+        if (dif > 0) {
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseGREEN));
         }
-        if (dif<0){
+        if (dif < 0) {
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseRED));
         }
-        if (dif==0.0){
+        if (dif == 0.0) {
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseGREY));
         }
         String difValue = new DecimalFormat("#0.0000").format(dif);
-        holder.difValue.setText(difValue);
-        String nominalStr = "Nominal:"+" "+c.getNominal()+c.getCharCode();
+        double difPercent = c.getPercentOfDifference();
+        String difPercentValue = new DecimalFormat("#0.00").format(difPercent);
+        String different;
+        if (difPercent > 0) {
+            different = "+" + difValue + "(+" + difPercentValue + "%)";
+        } else {
+            different = difValue + "(" + difPercentValue + "%)";
+        }
+
+        holder.difValue.setText(different);
+        String nominalStr = "Nominal:" + " " + c.getNominal() + c.getCharCode();
         holder.nominal.setText(nominalStr);
         return row;
     }

@@ -7,10 +7,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.util.Log;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -18,22 +23,59 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 public class Function {
-    public static Double convert(Double from, Double to, Double count){
-        return (to*count)/from;
+    public static Double convert(Double from, Double to, Double count) {
+        return (to * count) / from;
     }
-    public static String getDecimalToFormat(Double decimal){
+
+    public static String getDecimalToFormat(Double decimal) {
         DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
         decimalFormatSymbols.setDecimalSeparator('.');
         DecimalFormat decimalFormat = new DecimalFormat("#.##", decimalFormatSymbols);
         return decimalFormat.format(decimal);
     }
-    public static void copyToClipboard(String buffer, Context context){
+
+    public static String readJSONObject(Context context) {
+        String json;
+        try {
+            InputStream is = context.getAssets().open("CurrencyInfo.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            try {
+                is.read(buffer);
+            } catch (NullPointerException | IOException ex) {
+                ex.printStackTrace();
+                return null;
+            }
+            is.close();
+            json = new String(buffer, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public static void copyToClipboard(String buffer, Context context) {
         ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clipData = ClipData.newPlainText("",buffer);
+        ClipData clipData = ClipData.newPlainText("", buffer);
         assert clipboardManager != null;
         clipboardManager.setPrimaryClip(clipData);
     }
-    public static String getDate(String date){
+
+    public static String getCurrentDate() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        return dtf.format(now);
+    }
+
+    public static String getYesterdayDate() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime yesterday = LocalDateTime.now();
+        yesterday = yesterday.minusDays(1);
+        return dtf.format(yesterday);
+    }
+
+    public static String getDate(String date) {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.ENGLISH);
         try {
@@ -97,4 +139,6 @@ public class Function {
         }
         return false;
     }
+
+
 }

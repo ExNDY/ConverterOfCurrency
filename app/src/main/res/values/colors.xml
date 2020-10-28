@@ -19,8 +19,8 @@
 
     <color name="colorDivider">#E3E3E3</color>
 
-    <color name="PullToRefreshColor">@color/colorAccent</color>
-    <color name="PullToRefreshProgressBarColor">@color/elementBackground</color>
+    <color name="PullToRefreshColor">@color/elementBackground</color>
+    <color name="PullToRefreshProgressBarColor">@color/colorAccent</color>
 
     <color name="colorSwitcherCurrency">#fff</color>
 

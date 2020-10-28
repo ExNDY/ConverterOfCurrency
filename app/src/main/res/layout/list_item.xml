@@ -3,29 +3,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="60dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_marginTop="5dp"
-    android:layout_marginStart="15dp"
-    android:layout_marginEnd="15dp"
-    android:layout_marginBottom="5dp"
-    >
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="5dp">
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/code"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
         android:textColor="@color/textColor"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="16sp"
+        android:autoSizeMaxTextSize="20sp"
         android:textSize="16sp"
         android:gravity="center"
         android:textStyle="bold"
-        android:text="@string/code_of_currency"/>
+        android:text="@string/code_of_currency" />
+
     <RelativeLayout
         android:layout_weight="4"
         android:layout_width="0dp"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/currencyName"
-            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="40dp"
@@ -37,42 +46,51 @@
             android:text="@string/name_of_currency"
             android:ellipsize="end"
             />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/nominal_of_currency"
             android:layout_below="@id/currencyName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="normal"
-            android:textSize="12sp"
+            app:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMaxTextSize="16sp"
             android:textColor="@color/colorNominal"
             android:gravity="start|top"
             android:text="@string/nominal"
             tools:ignore="NestedWeights" />
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_weight="3"
         android:layout_width="0dp"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/currency_value"
-            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="normal"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@color/textColor"
             android:gravity="bottom|end"
-            android:text="@string/value"/>
+            android:text="@string/value" />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/difference_value"
             android:layout_below="@id/currency_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="normal"
-            android:textSize="12sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMaxTextSize="16sp"
+            android:autoSizeTextType="uniform"
             android:textAlignment="gravity"
             android:gravity="end|top"
-            android:text="@string/value"/>
+            android:text="@string/value" />
     </RelativeLayout>
 </LinearLayout>
 

@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter.data_adapters;
+package ru.mellman.conv3rter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -64,32 +64,45 @@ public class CoursesOfCurrency implements Parcelable{
     public void setCharCode(String charCode){
         this.charCode = charCode;
     }
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    public void setName(String name){
+
+    public void setName(String name) {
         this.name = name;
     }
-    public int getNominal(){
+
+    public int getNominal() {
         return nominal;
     }
-    public void setNominal(int nominal){
+
+    public void setNominal(int nominal) {
         this.nominal = nominal;
     }
-    public Double getCourseValue(){
+
+    public Double getCourseValue() {
         return courseValue;
     }
-    public void setCourseValue(Double courseValue){
+
+    public void setCourseValue(Double courseValue) {
         this.courseValue = courseValue;
     }
-    public Double getPreviousValue(){
+
+    public Double getPreviousValue() {
         return previousValue;
     }
-    public void setPreviousValue(Double previousValue){
+
+    public void setPreviousValue(Double previousValue) {
         this.previousValue = previousValue;
     }
-    public Double getDifference(){
-        return courseValue-previousValue;
+
+    public Double getDifference() {
+        return courseValue - previousValue;
+    }
+
+    public Double getPercentOfDifference() {
+        return ((courseValue / previousValue) - 1) * 100;
     }
 
     @Override

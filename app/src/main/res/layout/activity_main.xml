@@ -7,12 +7,13 @@
     android:orientation="vertical"
     android:fitsSystemWindows="false"
     android:clipChildren="false"
-    tools:context=".app.MainActivity">
+    tools:context=".activity.MainActivity">
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
+
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -68,9 +69,10 @@
             android:background="@color/elementBackground"
 
             >
+
             <ListView
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
                 android:animateLayoutChanges="true"
                 android:id="@+id/currencyListView"
                 android:layout_width="match_parent"
@@ -217,34 +219,31 @@
                 android:layout_height="match_parent"
                 android:shrinkColumns="*"
                 android:stretchColumns="*"
-
-
                 >
 
                 <TableRow
-                    android:layout_height="match_parent" android:layout_weight="1"
-                    >
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                        android:id="@+id/button1"
                         android:background="?android:attr/selectableItemBackground"
                         android:textSize="24sp"
-                        android:id="@+id/button1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="@string/_1"
-                        android:textColor="@color/colorPrimary"
-                        />
+                        android:textColor="@color/colorPrimary" />
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button2"
                         style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                         android:background="?android:attr/selectableItemBackground"
                         android:textSize="24sp"
-                        android:id="@+id/button2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="@string/_2"
-                        android:textColor="@color/colorPrimary"/>
+                        android:textColor="@color/colorPrimary" />
 
                     <Button
                         style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
@@ -348,6 +347,7 @@
                         android:layout_height="match_parent"
                         android:text="@string/_0"
                         android:textColor="@color/colorPrimary"/>
+
                     <Button
                         style="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                         android:background="?android:attr/selectableItemBackground"
@@ -356,7 +356,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="@string/del"
-                        android:textColor="@color/colorPrimary"/>
+                        android:textColor="@color/colorAccent" />
                 </TableRow>
             </TableLayout>
         </FrameLayout>
