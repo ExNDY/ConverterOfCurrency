@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
+import ru.mellman.conv3rter.lists.Courses;
+import ru.mellman.conv3rter.lists.CurrencyInfo;
+import ru.mellman.conv3rter.lists.CurrencyRate;
+
 public class CoursesConstructor implements Callable<ArrayList<Courses>> {
     DataLists list;
     ArrayList<CurrencyRate> ratesPrevious;

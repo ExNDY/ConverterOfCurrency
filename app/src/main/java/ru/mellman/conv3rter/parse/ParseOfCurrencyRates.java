@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter.data_course_of_currency;
+package ru.mellman.conv3rter.parse;
 
 import android.util.Log;
 
@@ -12,14 +12,13 @@ import java.util.Iterator;
 import java.util.concurrent.Callable;
 
 import ru.mellman.conv3rter.activity.MainActivity;
+import ru.mellman.conv3rter.lists.CurrencyRate;
 
-public class CurrencyOfRates implements Callable<ArrayList<CurrencyRate>> {
-    private final String datetime;
+public class ParseOfCurrencyRates implements Callable<ArrayList<CurrencyRate>> {
     private final String JSONObjectString;
 
-    public CurrencyOfRates(String JSONObjectString, String dateOfRate) {
+    public ParseOfCurrencyRates(String JSONObjectString) {
         this.JSONObjectString = JSONObjectString;
-        this.datetime = dateOfRate;
     }
 
     @NonNull
@@ -33,8 +32,7 @@ public class CurrencyOfRates implements Callable<ArrayList<CurrencyRate>> {
         ArrayList<CurrencyRate> currencyRate = new ArrayList<>();
         try {
             JSONObject RatesObj = new JSONObject(JSONObjectString);
-            RatesObj = (JSONObject) RatesObj.get("rates");
-            JSONObject allRates = (JSONObject) RatesObj.get(datetime);
+            JSONObject allRates = (JSONObject) RatesObj.get("rates");
             Iterator<String> keys = allRates.keys();
             while (keys.hasNext()) {
                 currencyRate.add(getRate(allRates, keys.next()));

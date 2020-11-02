@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter.data_course_of_currency;
+package ru.mellman.conv3rter.parse;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,12 +9,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.activity.MainActivity;
+import ru.mellman.conv3rter.lists.CurrencyInfo;
 
 public class ParseOfCurrencyInfo implements Callable<HashMap<String, CurrencyInfo>> {
     private final Context context;
@@ -27,7 +27,7 @@ public class ParseOfCurrencyInfo implements Callable<HashMap<String, CurrencyInf
     private static CurrencyInfo getRate(@NonNull JSONObject infoObj) throws JSONException {
         String charCode = infoObj.getString("code");
         String name = infoObj.getString("name");
-        String symbolCurrency = infoObj.getString("symbol");
+        String symbolCurrency = infoObj.getString("symbol_native");
         int decimalDigits = infoObj.getInt("decimal_digits");
         return new CurrencyInfo(charCode, name, symbolCurrency, decimalDigits);
     }

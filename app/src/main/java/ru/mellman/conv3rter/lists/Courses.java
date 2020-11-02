@@ -1,68 +1,73 @@
-package ru.mellman.conv3rter;
+package ru.mellman.conv3rter.lists;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class CoursesOfCurrency implements Parcelable{
-    private String id;
+import androidx.annotation.NonNull;
+
+public class Courses implements Parcelable {
     private String charCode;
+    private String symbolCurrency;
     private String name;
-    private int nominal;
     private Double courseValue;
     private Double previousValue;
+
     {
-        id = "Undefined";
         charCode = "---";
+        symbolCurrency = "-";
         name = "Undefined";
-        nominal = 0;
         courseValue = 0.0;
         previousValue = 0.0;
     }
-    public CoursesOfCurrency(){
+
+    public Courses() {
 
     }
 
-    public CoursesOfCurrency(String id, String charCode, String name, int nominal, Double value, Double previous){
+    public Courses(String charCode, String symbolCurrency, String name, Double value, Double previous) {
         super();
-        this.id = id;
         this.charCode = charCode;
         this.name = name;
-        this.nominal = nominal;
+        this.symbolCurrency = symbolCurrency;
         this.courseValue = value;
         this.previousValue = previous;
     }
 
-    protected CoursesOfCurrency(Parcel in){
-        id = in.readString();
+    protected Courses(Parcel in) {
         charCode = in.readString();
+        symbolCurrency = in.readString();
         name = in.readString();
-        nominal = in.readInt();
         courseValue = in.readDouble();
         previousValue = in.readDouble();
     }
 
-    public static final Creator<CoursesOfCurrency> CREATOR = new Creator<CoursesOfCurrency>() {
+
+    public static final Creator<Courses> CREATOR = new Creator<Courses>() {
         @Override
-        public CoursesOfCurrency createFromParcel(Parcel in) {
-            return new CoursesOfCurrency(in);
+        public Courses createFromParcel(Parcel in) {
+            return new Courses(in);
         }
 
         @Override
-        public CoursesOfCurrency[] newArray(int size) {
-            return new CoursesOfCurrency[size];
+        public Courses[] newArray(int size) {
+            return new Courses[size];
         }
     };
-    public String getId(){
-        return id;
-    }
-    public void setId(String id){
-        this.id = id;
-    }
-    public String getCharCode(){
+
+    public String getCharCode() {
         return charCode;
     }
-    public void setCharCode(String charCode){
+
+    public void setCharCode(String charCode) {
         this.charCode = charCode;
+    }
+
+    public String getSymbolCurrency() {
+        return symbolCurrency;
+    }
+
+    public void setSymbolCurrency(String symbolCurrency) {
+        this.symbolCurrency = symbolCurrency;
     }
 
     public String getName() {
@@ -71,14 +76,6 @@ public class CoursesOfCurrency implements Parcelable{
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getNominal() {
-        return nominal;
-    }
-
-    public void setNominal(int nominal) {
-        this.nominal = nominal;
     }
 
     public Double getCourseValue() {
@@ -111,12 +108,12 @@ public class CoursesOfCurrency implements Parcelable{
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(charCode);
+        dest.writeString(symbolCurrency);
         dest.writeString(name);
-        dest.writeInt(nominal);
         dest.writeDouble(courseValue);
         dest.writeDouble(previousValue);
     }
 }
+

@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter.parse;
+package ru.mellman.conv3rter.network;
 
 import android.util.Log;
 
@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;

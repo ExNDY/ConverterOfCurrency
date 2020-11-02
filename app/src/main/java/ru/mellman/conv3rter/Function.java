@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -74,6 +75,14 @@ public class Function {
         yesterday = yesterday.minusDays(1);
         return dtf.format(yesterday);
     }
+
+    public static String getPreviousDate(String inputDate) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate formatDate = LocalDate.parse(inputDate, dtf);
+        LocalDate previousDate = formatDate.minusDays(1);
+        return dtf.format(previousDate);
+    }
+
 
     public static String getDate(String date) {
         Calendar cal = Calendar.getInstance();

@@ -1,12 +1,12 @@
-package ru.mellman.conv3rter.app;
+package ru.mellman.conv3rter.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,19 +28,16 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeoutException;
 
 import ru.mellman.conv3rter.BottomSheetDialog;
-import ru.mellman.conv3rter.DataObject;
-import ru.mellman.conv3rter.DataTasks;
 import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.ConverterPreferenceManager;
 import ru.mellman.conv3rter.R;
 import ru.mellman.conv3rter.Snackbar;
-import ru.mellman.conv3rter.data_adapters.CoursesOfCurrency;
-import ru.mellman.conv3rter.data_adapters.CoursesOfCurrencyAdapter;
-import ru.mellman.conv3rter.data_adapters.CurrencyRate;
-import ru.mellman.conv3rter.data_adapters.CurrencyRateAdapter;
+import ru.mellman.conv3rter.adapters.CourseDataAdapter;
+import ru.mellman.conv3rter.lists.Courses;
+import ru.mellman.conv3rter.lists.CurrencyRate;
+import ru.mellman.conv3rter.adapters.RatesDataAdapter;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView currencyValueFrom, currencyValueTo;
@@ -50,15 +47,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton btnSwitchCurrency;
 
     public static final String PREF = "converterPreferences";
+    public static final String COURSES = "CoursesList";
+    public static final String RATES = "RatesList";
     public static final String JSON_COURSES = "JSON_Courses";
     public static final String JSON_RATES = "JSON_Rates";
     public static final String LAST_UPDATE_DATETIME = "lastUpdate";
     public static final String PREVIOUS_UPDATE_DATETIME = "previousUpdate";
 
-    ArrayList<CoursesOfCurrency> currencyList;
-    CoursesOfCurrencyAdapter currencyListAdapter;
-    ArrayList<CurrencyRate> currencyRateList;
-    CurrencyRateAdapter currencyRateListAdapter;
+    ArrayList<Courses> coursesList;
+    ArrayList<CurrencyRate> ratesList;
+    RecyclerView coursesListRv;
+    RatesDataAdapter currencyRateListAdapter;
     BottomSheetDialog bottomSheetDialog;
 
     @Override
@@ -67,27 +66,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initUI();
         initSpinner();
-
+        if (getIntent().hasExtra(COURSES)) {
+            coursesList = getIntent().getParcelableArrayListExtra(COURSES);
+        }
+        if (getIntent().hasExtra(RATES)) {
+            ratesList = getIntent().getParcelableArrayListExtra(RATES);
+        }
+        /*
         if (getIntent().hasExtra(JSON_COURSES)) {
             currencyList = getIntent().getParcelableArrayListExtra(JSON_COURSES);
         }
         if (getIntent().hasExtra(JSON_RATES)) {
             currencyRateList = getIntent().getParcelableArrayListExtra(JSON_RATES);
         }
+
+         */
         if (savedInstanceState != null) {
             currencyValueFrom.setText(savedInstanceState.getString("AreaFrom"));
-
-            currencyList = savedInstanceState.getParcelableArrayList("courseList");
-            currencyRateList = savedInstanceState.getParcelableArrayList("currencyRates");
+            coursesList = savedInstanceState.getParcelableArrayList(COURSES);
+            ratesList = savedInstanceState.getParcelableArrayList(RATES);
+            //currencyList = savedInstanceState.getParcelableArrayList("courseList");
+            //currencyRateList = savedInstanceState.getParcelableArrayList("currencyRates");
         }
-        currencyRateListAdapter = new CurrencyRateAdapter(this, currencyRateList);
+        currencyRateListAdapter = new RatesDataAdapter(this, ratesList);
         spinnerFrom.setAdapter(currencyRateListAdapter);
         spinnerTo.setAdapter(currencyRateListAdapter);
         ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
         spinnerFrom.setSelection(converterPreferenceManager.getSpinnerPosFrom(), true);
-        spinnerTo.setSelection(converterPreferenceManager.getSpinnerPosTo(),true);
-        currencyListAdapter = new CoursesOfCurrencyAdapter(this, R.layout.list_item, currencyList);
-        listOfCurrencyRates.setAdapter(currencyListAdapter);
+        spinnerTo.setSelection(converterPreferenceManager.getSpinnerPosTo(), true);
+        CourseDataAdapter adapter = new CourseDataAdapter(getApplicationContext(), coursesList, "USD");
+        coursesListRv.setAdapter(adapter);
+        //currencyListAdapter = new CoursesOfCurrencyAdapter(this, R.layout.list_item, currencyList);
+        //listOfCurrencyRates.setAdapter(currencyListAdapter);
     }
 
     protected void onResume() {
@@ -99,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void onPause() {
         super.onPause();
+
         Intent main = getIntent();
         main.putExtra("fromValue", currencyValueFrom.getText().toString());
     }
@@ -115,8 +126,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("AreaFrom", currencyValueFrom.getText().toString());
-        outState.putParcelableArrayList("courseList", currencyList);
-        outState.putParcelableArrayList("currencyRates", currencyRateList);
+
+        //coursesList = savedInstanceState.getParcelableArrayList(COURSES);
+        //ratesList = savedInstanceState.getParcelableArrayList(RATES);
+        outState.putParcelableArrayList(COURSES, coursesList);
+        outState.putParcelableArrayList(RATES, ratesList);
+        //outState.putParcelableArrayList("courseList", currencyList);
+        //outState.putParcelableArrayList("currencyRates", currencyRateList);
         outState.putInt("selectedPosTo", spinnerFrom.getSelectedItemPosition());
         outState.putInt("selectedPosFrom", spinnerTo.getSelectedItemPosition());
     }
@@ -151,11 +167,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void calculateCourseBy(String editTextFrom) {
+    private void calculateCourseBy(@NonNull String editTextFrom) {
         if (!editTextFrom.equals("")) {
             try {
                 double _val = Double.parseDouble(editTextFrom);
-                _val = Function.convert(currencyRateList.get(spinnerFrom.getSelectedItemPosition()).getRate(), currencyRateList.get(spinnerTo.getSelectedItemPosition()).getRate(), _val);
+                _val = Function.convert(ratesList.get(spinnerFrom.getSelectedItemPosition()).getRate(), ratesList.get(spinnerTo.getSelectedItemPosition()).getRate(), _val);
                 String result = Function.getDecimalToFormat(_val);
                 currencyValueTo.setText(result);
             } catch (Exception e) {
@@ -185,8 +201,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinnerTo = findViewById(R.id.spinnerTo);
         currencyValueFrom = findViewById(R.id.valueFrom);
         currencyValueTo = findViewById(R.id.valueTo);
-        listOfCurrencyRates = findViewById(R.id.currencyListView);
+
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        coursesListRv = findViewById(R.id.coursesList);
         final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
 
         pullToRefresh.setColorSchemeColors(getResources().getColor(R.color.PullToRefreshColor, getApplicationContext().getTheme()));
@@ -206,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
             }
         });
+        /*
         listOfCurrencyRates.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -223,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
             }
-        });
+        });*/
         btn0.setOnClickListener(this);
         btn1.setOnClickListener(this);
         btn2.setOnClickListener(this);
@@ -249,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onRefresh() {
                 SharedPreferences sharedPreferences = getSharedPreferences(PREF, MODE_PRIVATE);
-                checkUpdate(sharedPreferences);
+                //checkUpdate(sharedPreferences);
                 pullToRefresh.setRefreshing(false);
             }
         });
@@ -375,48 +393,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void checkThemeMod(@NonNull SharedPreferences sharedPreferences) {
-        if (sharedPreferences.getBoolean("DayNight_Mode", false)) {
-            switchThemeMaterial.setChecked(true);
-        } else {
-            switchThemeMaterial.setChecked(false);
-        }
+        switchThemeMaterial.setChecked(sharedPreferences.getBoolean("DayNight_Mode", false));
     }
 
-    private void checkUpdate(@NonNull SharedPreferences sharedPreferences) {
-        boolean check = Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
-        if (check && Function.isOnline(getApplicationContext())) {
-            try {
-                DataObject data = DataTasks.getDataOfCurrency();
-                currencyList = data.getCoursesList();
-                currencyRateList = data.getRatesList();
-                String jsonCourses = data.getJsonObjectCourses();
-                String jsonRates = data.getJsonObjectRates();
+    /*
+        private void checkUpdate(@NonNull SharedPreferences sharedPreferences) {
+            boolean check = Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
+            if (check && Function.isOnline(getApplicationContext())) {
+                try {
+                    DataObject data = DataTasks.getDataOfCurrency();
+                    currencyList = data.getCoursesList();
+                    currencyRateList = data.getRatesList();
+                    String jsonCourses = data.getJsonObjectCourses();
+                    String jsonRates = data.getJsonObjectRates();
 
-                SharedPreferences.Editor ed = sharedPreferences.edit();
-                ed.putString(JSON_COURSES, jsonCourses);
-                ed.putString(JSON_RATES, jsonRates);
-                ed.putString(LAST_UPDATE_DATETIME, data.getDateUpdate());
-                ed.putString(PREVIOUS_UPDATE_DATETIME, data.getDatePreviousUpdate());
-                ed.apply();
+                    SharedPreferences.Editor ed = sharedPreferences.edit();
+                    ed.putString(JSON_COURSES, jsonCourses);
+                    ed.putString(JSON_RATES, jsonRates);
+                    ed.putString(LAST_UPDATE_DATETIME, data.getDateUpdate());
+                    ed.putString(PREVIOUS_UPDATE_DATETIME, data.getDatePreviousUpdate());
+                    ed.apply();
 
-                currencyListAdapter.notifyDataSetChanged();
-                currencyRateListAdapter.notifyDataSetChanged();
-                SnackBarShow(getResources().getString(R.string.dataBaseWasUpdated));
-            } catch (InterruptedException | TimeoutException e) {
-                e.printStackTrace();
+                    currencyListAdapter.notifyDataSetChanged();
+                    currencyRateListAdapter.notifyDataSetChanged();
+                    SnackBarShow(getResources().getString(R.string.dataBaseWasUpdated));
+                } catch (InterruptedException | TimeoutException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                if (!check && Function.isOnline(getApplicationContext())) {
+                    SnackBarShow(getResources().getString(R.string.dataBaseIsActual));
+                }
+                if (!Function.isOnline(getApplicationContext())) {
+                    SnackBarShow(getResources().getString(R.string.offline));
+                }
+
             }
-
-        } else {
-            if (!check && Function.isOnline(getApplicationContext())) {
-                SnackBarShow(getResources().getString(R.string.dataBaseIsActual));
-            }
-            if (!Function.isOnline(getApplicationContext())) {
-                SnackBarShow(getResources().getString(R.string.offline));
-            }
-
         }
-    }
-
+    */
     private void SnackBarShow(String message) {
         ViewGroup view = findViewById(android.R.id.content);
         final Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_SHORT);

@@ -49,7 +49,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
         View v = inflater.inflate(R.layout.buttomsheet_layout, container, false);
         init(v);
         Bundle bundle = getArguments();
-        assert bundle != null;
+        assert bundle != null;/*
         CoursesOfCurrency coursesOfCurrency = bundle.getParcelable("currency");
         if (coursesOfCurrency!=null){
             bs_code.setText(coursesOfCurrency.getCharCode());
@@ -75,7 +75,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
             }
             bs_diff_value.setText(Function.getDecimalToFormat(coursesOfCurrency.getDifference()));
         }
-
+*/
         return v;
     }
     private void init(View v){

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="80dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_marginTop="5dp"
@@ -10,45 +10,44 @@
     android:layout_marginEnd="10dp"
     android:layout_marginBottom="5dp">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/code"
+    <TextView
+        android:id="@+id/symbol"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
         android:textColor="@color/textColor"
         android:autoSizeTextType="uniform"
         android:autoSizeMinTextSize="16sp"
         android:autoSizeMaxTextSize="20sp"
-        android:textSize="16sp"
         android:gravity="center"
         android:textStyle="bold"
-        android:text="@string/code_of_currency" />
+        android:text="@string/sym" />
 
     <RelativeLayout
         android:layout_weight="4"
+
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/currencyName"
             android:layout_alignParentTop="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="40dp"
-            android:textSize="16sp"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="18sp"
+            android:autoSizeMaxTextSize="24sp"
             android:textColor="@color/textColor"
             android:gravity="start|bottom|center_vertical"
             android:textStyle="normal"
             android:singleLine="true"
             android:text="@string/name_of_currency"
-            android:ellipsize="end"
-            />
+            android:ellipsize="end" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/nominal_of_currency"
+        <TextView
+            android:id="@+id/ratio_of_currency"
             android:layout_below="@id/currencyName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -68,18 +67,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/currency_value"
             android:layout_alignParentTop="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="normal"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textColor="@color/textColor"
             android:gravity="bottom|end"
             android:text="@string/value" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/difference_value"
             android:layout_below="@id/currency_value"
             android:layout_width="match_parent"

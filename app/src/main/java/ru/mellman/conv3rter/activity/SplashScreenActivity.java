@@ -2,7 +2,6 @@ package ru.mellman.conv3rter.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.lifecycle.Observer;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,45 +14,35 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import ru.mellman.conv3rter.ConverterPreferenceManager;
 import ru.mellman.conv3rter.DataTasks;
 import ru.mellman.conv3rter.Function;
-import ru.mellman.conv3rter.NetworkConnectionMonitor;
+import ru.mellman.conv3rter.network.NetworkConnectionMonitor;
+import ru.mellman.conv3rter.data_course_of_currency.ResultDTObj;
 import ru.mellman.conv3rter.Snackbar;
 import ru.mellman.conv3rter.Variables;
-import ru.mellman.conv3rter.CoursesOfCurrency;
-import ru.mellman.conv3rter.data_course_of_currency.Courses;
-import ru.mellman.conv3rter.data_course_of_currency.CurrencyRate;
-import ru.mellman.conv3rter.DataObject;
+import ru.mellman.conv3rter.lists.Courses;
+import ru.mellman.conv3rter.lists.CurrencyRate;
 import ru.mellman.conv3rter.R;
-import ru.mellman.conv3rter.data_course_of_currency.DataLists;
 
 public class SplashScreenActivity extends AppCompatActivity {
     public static final String PREF = "converterPreferences";
     public static final String JSON_COURSES = "JSON_Courses";
     public static final String JSON_RATES = "JSON_Rates";
     public static final String COURSES = "CoursesList";
+    public static final String RATES = "RatesList";
     public static final String LAST_UPDATE_DATETIME = "lastUpdate";
     public static final String PREVIOUS_UPDATE_DATETIME = "previousUpdate";
-    ArrayList<CoursesOfCurrency> courseList;
-    ArrayList<CurrencyRate> currencyRateList;
-
-    ArrayList<Courses> coursesArrayList;
-
     TextView statusApp;
 
     private NetworkConnectionMonitor connectionMonitor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-        String s = "asD";
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
         connectionMonitor = new NetworkConnectionMonitor(getApplicationContext());
+        /*
         connectionMonitor.observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean isConnected) {
@@ -64,7 +53,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }
             }
         });
-
+*/
         if (sharedPreferences.getBoolean("DayNight_Mode", false)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
@@ -74,6 +63,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         statusApp = findViewById(R.id.textSplashScreen_statusApp);
+        startMainActivity();
     }
 
 
@@ -105,14 +95,14 @@ public class SplashScreenActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
         ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
         if (preferenceManager.getFirstLaunch()) {
-            OfflineSnackBar(getResources().getString(R.string.offline));
+            showOfflineSnackBar(getResources().getString(R.string.offline));
             statusApp.setText(R.string.first_start_error);
         } else {
             if (!sharedPreferences.getString(JSON_COURSES, "").equals("") && !sharedPreferences.getString(JSON_RATES, "").equals("")) {
-                loadData();
+                //loadData();
                 startMainActivity();
             } else {
-                OfflineSnackBar(getResources().getString(R.string.offline));
+                showOfflineSnackBar(getResources().getString(R.string.offline));
                 statusApp.setText(R.string.database_error);
             }
         }
@@ -123,37 +113,56 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
         if (preferenceManager.getFirstLaunch()) {
-            downloadData();
+            //downloadData();
             preferenceManager.FirstLaunchSettings();
         } else {
             if (Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, "")) || sharedPreferences.getString(JSON_COURSES, "").equals("") || sharedPreferences.getString(JSON_RATES, "").equals("")) {
-                downloadData();
+                //downloadData();
             } else {
-                loadData();
+                //loadData();
             }
         }
         startMainActivity();
     }
 
+    private void runApp() {
+        ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
+        if (preferenceManager.getFirstLaunch()) {
+            preferenceManager.FirstLaunchSettings();
+        } else {
+
+        }
+    }
 
     private void startMainActivity() {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent main = new Intent(SplashScreenActivity.this, MainActivity.class);
-                coursesArrayList = DataTasks.getCourseList(getApplicationContext());
-                main.putParcelableArrayListExtra(COURSES, coursesArrayList);
-                main.putParcelableArrayListExtra(JSON_COURSES, courseList);
-                main.putParcelableArrayListExtra(JSON_RATES, currencyRateList);
-                startActivity(main);
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
+                ResultDTObj result = DataTasks.getUpdateData(getApplicationContext());
+                if (result.getResult().equals("OK")) {
+                    ArrayList<Courses> courses = result.getCourses();
+                    ArrayList<CurrencyRate> rates = result.getRates();
+                    String dateUpdate = result.getDateOfUpdate();
+                    ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
+                    converterPreferenceManager.saveCoursesList(courses);
+                    main.putParcelableArrayListExtra(COURSES, courses);
+                    main.putParcelableArrayListExtra(RATES, rates);
+                    startActivity(main);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    finish();
+                } else {
+                    showOfflineSnackBar("DATA IS NOT INITIALIZED");
+                }
+
+
             }
-        }, 250);
+        }, 0);
 
 
     }
-    private void OfflineSnackBar(String message){
+
+    private void showOfflineSnackBar(String message) {
         ViewGroup view = findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_INDEFINITE);
         View snackView = snackbar.getView();
@@ -162,41 +171,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         snackbar.show();
     }
 
-    private void OnlineSnackBar(){
+    private void showOnlineSnackBar() {
         ViewGroup view = findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_INDEFINITE);
         View snackView = snackbar.getView();
         snackView.setBackgroundColor(getResources().getColor(R.color.colorGREENForSnackBar, getApplicationContext().getTheme()));
         snackbar.setText("Online");
         snackbar.show();
-    }
-
-    private void downloadData(){
-        try {
-            DataObject data = DataTasks.getDataOfCurrency();
-            courseList = data.getCoursesList();
-            currencyRateList = data.getRatesList();
-            String jsonCourses = data.getJsonObjectCourses();
-            String jsonRates = data.getJsonObjectRates();
-            SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-            SharedPreferences.Editor ed = sharedPreferences.edit();
-            ed.putString(JSON_COURSES, jsonCourses);
-            ed.putString(JSON_RATES,jsonRates);
-            ed.putString(LAST_UPDATE_DATETIME, data.getDateUpdate());
-            ed.putString(PREVIOUS_UPDATE_DATETIME, data.getDatePreviousUpdate());
-            ed.apply();
-        } catch (InterruptedException | TimeoutException e) {
-            e.printStackTrace();
-        }
-    }
-    private void loadData(){
-        try {
-            SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-            DataObject data = DataTasks.loadDataOfCurrency(sharedPreferences.getString(JSON_COURSES,""), sharedPreferences.getString(JSON_RATES, ""));
-            courseList = data.getCoursesList();
-            currencyRateList = data.getRatesList();
-        } catch (InterruptedException | TimeoutException e) {
-            e.printStackTrace();
-        }
     }
 }

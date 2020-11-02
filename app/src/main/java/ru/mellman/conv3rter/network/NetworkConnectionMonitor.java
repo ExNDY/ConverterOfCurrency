@@ -1,4 +1,4 @@
-package ru.mellman.conv3rter;
+package ru.mellman.conv3rter.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
