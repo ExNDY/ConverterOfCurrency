@@ -27,7 +27,7 @@ public class NetworkConnectionMonitor extends LiveData<Boolean> {
 
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            postValue(checkConnection(connectivityManager));
+            postValue(NetworkUtils.pingInternetConnection());
             assert connectivityManager != null;
             callback = new ConnectionNetworkCallback();
             connectivityManager.registerDefaultNetworkCallback(callback);
@@ -37,18 +37,7 @@ public class NetworkConnectionMonitor extends LiveData<Boolean> {
         }
     }
 
-    private boolean checkConnection(@NonNull ConnectivityManager connectivityManager) {
-        Network network = connectivityManager.getActiveNetwork();
-        if (network == null) {
-            return false;
-        } else {
-            NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(network);
-            return actNw != null
-                    && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                    || actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                    || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET));
-        }
-    }
+
 
     private class ConnectionNetworkCallback extends ConnectivityManager.NetworkCallback {
 

@@ -20,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,18 +29,20 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.ArrayList;
 
 import ru.mellman.conv3rter.BottomSheetDialog;
+import ru.mellman.conv3rter.DataTasks;
 import ru.mellman.conv3rter.Function;
-import ru.mellman.conv3rter.ConverterPreferenceManager;
+import ru.mellman.conv3rter.PreferenceManager;
 import ru.mellman.conv3rter.R;
 import ru.mellman.conv3rter.Snackbar;
 import ru.mellman.conv3rter.adapters.CourseDataAdapter;
+import ru.mellman.conv3rter.data_course_of_currency.ResultDTObj;
 import ru.mellman.conv3rter.lists.Courses;
 import ru.mellman.conv3rter.lists.CurrencyRate;
 import ru.mellman.conv3rter.adapters.RatesDataAdapter;
+import ru.mellman.conv3rter.network.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView currencyValueFrom, currencyValueTo;
-    private ListView listOfCurrencyRates;
     private Spinner spinnerFrom, spinnerTo;
     private SwitchMaterial switchThemeMaterial;
     private ImageButton btnSwitchCurrency;
@@ -49,16 +50,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String PREF = "converterPreferences";
     public static final String COURSES = "CoursesList";
     public static final String RATES = "RatesList";
-    public static final String JSON_COURSES = "JSON_Courses";
-    public static final String JSON_RATES = "JSON_Rates";
     public static final String LAST_UPDATE_DATETIME = "lastUpdate";
-    public static final String PREVIOUS_UPDATE_DATETIME = "previousUpdate";
 
     ArrayList<Courses> coursesList;
     ArrayList<CurrencyRate> ratesList;
     RecyclerView coursesListRv;
+    CourseDataAdapter adapter;
     RatesDataAdapter currencyRateListAdapter;
     BottomSheetDialog bottomSheetDialog;
+    String dateUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,32 +72,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (getIntent().hasExtra(RATES)) {
             ratesList = getIntent().getParcelableArrayListExtra(RATES);
         }
-        /*
-        if (getIntent().hasExtra(JSON_COURSES)) {
-            currencyList = getIntent().getParcelableArrayListExtra(JSON_COURSES);
-        }
-        if (getIntent().hasExtra(JSON_RATES)) {
-            currencyRateList = getIntent().getParcelableArrayListExtra(JSON_RATES);
-        }
-
-         */
         if (savedInstanceState != null) {
+
             currencyValueFrom.setText(savedInstanceState.getString("AreaFrom"));
             coursesList = savedInstanceState.getParcelableArrayList(COURSES);
             ratesList = savedInstanceState.getParcelableArrayList(RATES);
-            //currencyList = savedInstanceState.getParcelableArrayList("courseList");
-            //currencyRateList = savedInstanceState.getParcelableArrayList("currencyRates");
         }
         currencyRateListAdapter = new RatesDataAdapter(this, ratesList);
         spinnerFrom.setAdapter(currencyRateListAdapter);
         spinnerTo.setAdapter(currencyRateListAdapter);
-        ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
-        spinnerFrom.setSelection(converterPreferenceManager.getSpinnerPosFrom(), true);
-        spinnerTo.setSelection(converterPreferenceManager.getSpinnerPosTo(), true);
-        CourseDataAdapter adapter = new CourseDataAdapter(getApplicationContext(), coursesList, "USD");
+        PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+        spinnerFrom.setSelection(preferenceManager.getSpinnerPosFrom(), true);
+        spinnerTo.setSelection(preferenceManager.getSpinnerPosTo(), true);
+
+        adapter = new CourseDataAdapter(getApplicationContext(), coursesList, "USD", new CourseDataAdapter.CourseListInterface() {
+            @Override
+            public void onItemClick(int position) {
+                Courses c = coursesList.get(position);
+                bottomSheetDialog = new BottomSheetDialog();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("currency", c);
+                bottomSheetDialog.setArguments(bundle);
+                if(getSupportFragmentManager().findFragmentByTag(BottomSheetDialog.TAG)==null){
+                    bottomSheetDialog.show(getSupportFragmentManager(), BottomSheetDialog.TAG);
+                }
+            }
+
+            @Override
+            public void onLongItemClick(int position) {
+
+            }
+        });
         coursesListRv.setAdapter(adapter);
-        //currencyListAdapter = new CoursesOfCurrencyAdapter(this, R.layout.list_item, currencyList);
-        //listOfCurrencyRates.setAdapter(currencyListAdapter);
     }
 
     protected void onResume() {
@@ -126,13 +132,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("AreaFrom", currencyValueFrom.getText().toString());
-
-        //coursesList = savedInstanceState.getParcelableArrayList(COURSES);
-        //ratesList = savedInstanceState.getParcelableArrayList(RATES);
         outState.putParcelableArrayList(COURSES, coursesList);
         outState.putParcelableArrayList(RATES, ratesList);
-        //outState.putParcelableArrayList("courseList", currencyList);
-        //outState.putParcelableArrayList("currencyRates", currencyRateList);
         outState.putInt("selectedPosTo", spinnerFrom.getSelectedItemPosition());
         outState.putInt("selectedPosFrom", spinnerTo.getSelectedItemPosition());
     }
@@ -141,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinnerFrom.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
-                converterPreferenceManager.saveSpinnerPosFrom(i);
+                PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                preferenceManager.saveSpinnerPosFrom(i);
                 calculateCourseBy(currencyValueFrom.getText().toString());
             }
 
@@ -154,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinnerTo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
-                converterPreferenceManager.saveSpinnerPosTo(i);
+                PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                preferenceManager.saveSpinnerPosTo(i);
                 calculateCourseBy(currencyValueFrom.getText().toString());
             }
 
@@ -219,29 +220,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         + to.getCharCode() + " " + getResources().getString(R.string.clipboardstring_3)
                         + Function.getDate(sharedPreferences.getString(LAST_UPDATE_DATETIME, ""));
                 Function.copyToClipboard(buf, getApplicationContext());
-                SnackBarShow(getResources().getString(R.string.copy_to_clipboard));
+                showSnackBar(getResources().getString(R.string.copy_to_clipboard));
                 return true;
             }
         });
-        /*
-        listOfCurrencyRates.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CoursesOfCurrency o = (CoursesOfCurrency) listOfCurrencyRates.getItemAtPosition(position);
-                String s = o.getId() + o.getCharCode() + o.getName() + Function.getDecimalToFormat(o.getCourseValue()) + Function.getDecimalToFormat(o.getDifference());
-                bottomSheetDialog = new BottomSheetDialog();
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("currency", o);
-                SharedPreferences sp = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-                bundle.putString("date_last_update", sp.getString(LAST_UPDATE_DATETIME,""));
-                bundle.putString("date_previous_update", sp.getString(PREVIOUS_UPDATE_DATETIME,""));
-                bottomSheetDialog.setArguments(bundle);
-                if(getSupportFragmentManager().findFragmentByTag(BottomSheetDialog.TAG)==null){
-                    bottomSheetDialog.show(getSupportFragmentManager(), BottomSheetDialog.TAG);
-                }
-
-            }
-        });*/
         btn0.setOnClickListener(this);
         btn1.setOnClickListener(this);
         btn2.setOnClickListener(this);
@@ -266,9 +248,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                SharedPreferences sharedPreferences = getSharedPreferences(PREF, MODE_PRIVATE);
-                //checkUpdate(sharedPreferences);
-                pullToRefresh.setRefreshing(false);
+                if (NetworkUtils.pingInternetConnection()){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ResultDTObj newData = DataTasks.update(getApplicationContext());
+                            if (newData.getResult().equals("FAIL")){
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        pullToRefresh.setRefreshing(false);
+                                        showSnackBar(getString(R.string.fail_on_update));
+                                    }
+                                });
+                            }
+                            else
+                            if(newData.getResult().equals("OK")){
+                                coursesList = newData.getCourses();
+                                ratesList = newData.getRates();
+                                dateUpdate = newData.getDateOfUpdate();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        pullToRefresh.setRefreshing(false);
+                                        PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                                        preferenceManager.saveData(coursesList, ratesList, dateUpdate);
+                                        adapter.notifyDataSetChanged();
+                                        currencyRateListAdapter.notifyDataSetChanged();
+                                        showSnackBar(getString(R.string.dataBaseWasUpdated));
+                                    }
+                                });
+                            }
+                        }
+                    }).start();
+                }
+                else {
+                    pullToRefresh.setRefreshing(false);
+                    showSnackBar(getString(R.string.offline));
+                }
             }
         });
         switchThemeMaterial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -306,9 +323,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         currencyValueFrom.setShowSoftInputOnFocus(false);
-
-
-
         SharedPreferences sharedPreferences = getSharedPreferences(PREF, MODE_PRIVATE);
         checkThemeMod(sharedPreferences);
     }
@@ -329,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         currencyValueFrom.setText(text);
                     }
                 } else {
-                    SnackBarShow(getString(R.string.after_dots_symbol_limit));
+                    showSnackBar(getString(R.string.after_dots_symbol_limit));
                 }
             } else {
                 if (txt.equals("0")) {
@@ -341,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         } else {
-            SnackBarShow(getString(R.string.string_limit));
+            showSnackBar(getString(R.string.string_limit));
         }
 
     }
@@ -353,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String text = txt + ".";
             currencyValueFrom.setText(text);
         } else {
-            SnackBarShow(getString(R.string.dot_in_line));
+            showSnackBar(getString(R.string.dot_in_line));
         }
     }
 
@@ -432,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     */
-    private void SnackBarShow(String message) {
+    private void showSnackBar(String message) {
         ViewGroup view = findViewById(android.R.id.content);
         final Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_SHORT);
         View snackView = snackbar.getView();

@@ -2,6 +2,8 @@ package ru.mellman.conv3rter.lists;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Comparator;
+
 public class CurrencyRate implements Parcelable {
 
     private String charCode;
@@ -62,5 +64,4 @@ public class CurrencyRate implements Parcelable {
         dest.writeString(charCode);
         dest.writeDouble(rate);
     }
-
 }

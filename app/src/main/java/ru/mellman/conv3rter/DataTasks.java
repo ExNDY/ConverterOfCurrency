@@ -5,10 +5,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -32,16 +35,19 @@ import ru.mellman.conv3rter.network.HttpHandler;
 public class DataTasks {
     private static String TAG = MainActivity.class.getSimpleName();
 
-    public static DataLists getData(Context context) {
+    @NonNull
+    public static ResultDTObj update(Context context){
         ArrayList<CurrencyRate> latestRatesList = null;
         ArrayList<CurrencyRate> previousRatesList = null;
         HashMap<String, CurrencyInfo> currencyInfo = null;
+        ArrayList<Courses> courses = null;
         String latestRates = "";
         String previousRates = "";
         String dateCurrentRates = "";
-        ExecutorService executorService = Executors.newCachedThreadPool();
+        boolean isLive = true;
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
         Future<String> futureLatestRates = executorService.submit(new getLatestRatesJSONObject());
-        while (true) {
+        while (isLive) {
             try {
                 latestRates = futureLatestRates.get(30, TimeUnit.SECONDS);
                 Future<String> futureDateOfUpdate = executorService.submit(new getDateTimeLastUpdate(latestRates));
@@ -61,8 +67,22 @@ public class DataTasks {
                                             latestRatesList = futureLatestRateList.get(20, TimeUnit.SECONDS);
                                             previousRatesList = futurePreviousRateList.get(20, TimeUnit.SECONDS);
                                             currencyInfo = futureCurrencyInfoList.get(20, TimeUnit.SECONDS);
-                                            executorService.shutdownNow();
-                                            return new DataLists(latestRatesList, previousRatesList, currencyInfo, dateCurrentRates);
+                                            Collections.sort(latestRatesList,Compare.RatesNameComparator);
+                                            Collections.sort(previousRatesList,Compare.RatesNameComparator);
+                                            Future<ArrayList<Courses>> futureCourses = executorService.submit(new CoursesConstructor(previousRatesList, latestRatesList, currencyInfo));
+                                            while (true) {
+                                                try {
+                                                    if (futureCourses.isDone()) {
+                                                        courses = futureCourses.get(20, TimeUnit.SECONDS);
+                                                        executorService.shutdownNow();
+                                                        Collections.sort(courses, Compare.CoursesNameComparator);
+                                                        isLive = false;
+                                                        return new ResultDTObj(courses, latestRatesList, dateCurrentRates, "OK");
+                                                    }
+                                                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -75,28 +95,12 @@ public class DataTasks {
                 }
             } catch (ExecutionException | InterruptedException | CancellationException | TimeoutException exception) {
                 exception.printStackTrace();
-            }
-        }
-    }
+                return new ResultDTObj(null, null, null, "ERROR");
 
-    @NonNull
-    @Contract("_ -> new")
-    public static ResultDTObj getUpdateData(Context context) {
-        DataLists lists = getData(context);
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        Future<ArrayList<Courses>> futureCourses = executorService.submit(new CoursesConstructor(lists));
-        while (true) {
-            try {
-                if (futureCourses.isDone()) {
-                    ArrayList<Courses> courses = futureCourses.get(20, TimeUnit.SECONDS);
-                    executorService.shutdownNow();
-                    return new ResultDTObj(courses, lists.getCurrentRateList(), lists.getDateOfUpdate(), "OK");
-                }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                e.printStackTrace();
             }
         }
-    }
+        return null;
+    };
 
     private static class getLatestRatesJSONObject implements Callable<String> {
         @Override
@@ -124,32 +128,8 @@ public class DataTasks {
     }
 
 
-    /**
-     * JSON response for Courses
-     */
-    private static class getCurrentCourseJSONObject implements Callable<String> {
-        @Override
-        public String call() throws Exception {
-            HttpHandler steamHandler = new HttpHandler();
-            String jsonObject = "https://www.cbr-xml-daily.ru/daily_json.js";
-            return steamHandler.makeServiceCall(jsonObject);
-        }
-    }
-
-    /**
-     * JSON response for Rates
-     */
-    private static class getCurrentRateJSONObject implements Callable<String> {
-        @Override
-        public String call() throws Exception {
-            HttpHandler steamHandler = new HttpHandler();
-            String jsonObject = "https://www.cbr-xml-daily.ru/latest.js";
-            return steamHandler.makeServiceCall(jsonObject);
-        }
-    }
-
     private static class getDateTimeLastUpdate implements Callable<String> {
-        private String stream;
+        private final String stream;
 
         public getDateTimeLastUpdate(String stream) {
             this.stream = stream;

@@ -24,11 +24,14 @@ public class CourseDataAdapter extends RecyclerView.Adapter<CourseDataAdapter.Vi
     private final Context context;
     private final String baseCurrency;
 
-    public CourseDataAdapter(Context context, ArrayList<Courses> courses, String baseCurrency) {
+    private static CourseListInterface courseListInterface;
+
+    public CourseDataAdapter(Context context, ArrayList<Courses> courses, String baseCurrency, CourseListInterface interFace) {
         this.inflater = LayoutInflater.from(context);
         this.courses = courses;
         this.context = context;
         this.baseCurrency = baseCurrency;
+        courseListInterface = interFace;
     }
 
     @NonNull
@@ -61,14 +64,14 @@ public class CourseDataAdapter extends RecyclerView.Adapter<CourseDataAdapter.Vi
         if (dif == 0.0) {
             holder.difValue.setTextColor(ContextCompat.getColor(context, R.color.courseGREY));
         }
-        String difValue = new DecimalFormat("#0.0000").format(dif);
+
         double difPercent = course.getPercentOfDifference();
         String difPercentValue = new DecimalFormat("#0.00").format(difPercent);
         String different;
         if (difPercent > 0) {
-            different = "+" + difValue + "(+" + difPercentValue + "%)";
+            different = "(+" + difPercentValue + "%)";
         } else {
-            different = difValue + "(" + difPercentValue + "%)";
+            different = "(" + difPercentValue + "%)";
         }
         holder.difValue.setText(different);
     }
@@ -79,7 +82,7 @@ public class CourseDataAdapter extends RecyclerView.Adapter<CourseDataAdapter.Vi
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         final TextView code;
         final TextView currencyName;
         final TextView currentValue;
@@ -94,6 +97,31 @@ public class CourseDataAdapter extends RecyclerView.Adapter<CourseDataAdapter.Vi
             currentValue = view.findViewById(R.id.currency_value);
             difValue = view.findViewById(R.id.difference_value);
             ratio = view.findViewById(R.id.ratio_of_currency);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION){
+                        courseListInterface.onItemClick(position);
+                    }
+                }
+            });
+            view.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION){
+                        courseListInterface.onItemClick(position);
+                    }
+                    return true;
+                }
+            });
         }
     }
+    public interface CourseListInterface{
+        void onItemClick(int position);
+        void onLongItemClick(int position);
+    }
 }
+

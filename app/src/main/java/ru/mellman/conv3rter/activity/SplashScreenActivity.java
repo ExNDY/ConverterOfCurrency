@@ -2,10 +2,10 @@ package ru.mellman.conv3rter.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.Observer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,9 +15,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import ru.mellman.conv3rter.ConverterPreferenceManager;
+import ru.mellman.conv3rter.PreferenceManager;
 import ru.mellman.conv3rter.DataTasks;
-import ru.mellman.conv3rter.Function;
 import ru.mellman.conv3rter.network.NetworkConnectionMonitor;
 import ru.mellman.conv3rter.data_course_of_currency.ResultDTObj;
 import ru.mellman.conv3rter.Snackbar;
@@ -25,45 +24,84 @@ import ru.mellman.conv3rter.Variables;
 import ru.mellman.conv3rter.lists.Courses;
 import ru.mellman.conv3rter.lists.CurrencyRate;
 import ru.mellman.conv3rter.R;
+import ru.mellman.conv3rter.network.NetworkUtils;
 
 public class SplashScreenActivity extends AppCompatActivity {
-    public static final String PREF = "converterPreferences";
-    public static final String JSON_COURSES = "JSON_Courses";
-    public static final String JSON_RATES = "JSON_Rates";
     public static final String COURSES = "CoursesList";
     public static final String RATES = "RatesList";
-    public static final String LAST_UPDATE_DATETIME = "lastUpdate";
-    public static final String PREVIOUS_UPDATE_DATETIME = "previousUpdate";
-    TextView statusApp;
-
+    private TextView statusApp;
+    private ArrayList<Courses> courses;
+    private ArrayList<CurrencyRate> rates;
     private NetworkConnectionMonitor connectionMonitor;
-
+    PreferenceManager preferenceManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        preferenceManager = new PreferenceManager(getApplicationContext());
         connectionMonitor = new NetworkConnectionMonitor(getApplicationContext());
-        /*
-        connectionMonitor.observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isConnected) {
-                if (isConnected) {
-                    Online();
-                } else {
-                    Offline();
-                }
-            }
-        });
-*/
-        if (sharedPreferences.getBoolean("DayNight_Mode", false)) {
+        if (preferenceManager.getThemeMode()){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
+        }
+        else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         statusApp = findViewById(R.id.textSplashScreen_statusApp);
-        startMainActivity();
+        connectionMonitor = new NetworkConnectionMonitor(getApplicationContext());
+        if(preferenceManager.getFirstLaunch()){
+            connectionMonitor.observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean isConnected) {
+                    if (isConnected){
+                        if (NetworkUtils.pingInternetConnection()){
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadOnlineData(getApplicationContext());
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            preferenceManager.FirstLaunchSettings();
+                                        }
+                                    });
+                                    startMainActivity();
+                                }
+                            }).start();
+                        }
+                        else{
+                            showSnackBar(getResources().getString(R.string.internet_connection_without_internet));
+                        }
+                    }
+                    else {
+                        showSnackBar(getResources().getString(R.string.offline));
+                        statusApp.setText(R.string.first_start_error);
+                    }
+                }
+            });
+
+        }
+        else{
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ResultDTObj data = preferenceManager.readData();
+                    if (data.getCourses()!= null && data.getRates()!=null){
+                        courses = data.getCourses();
+                        rates = data.getRates();
+                        startMainActivity();
+                    }
+                    else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showSnackBar(getResources().getString(R.string.database_error));
+                            }
+                        });
+                    }
+                }
+            }).start();
+        }
     }
 
 
@@ -90,79 +128,34 @@ public class SplashScreenActivity extends AppCompatActivity {
             Variables.isRegistered = true;
         }
     }
-
-    private void Offline() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-        ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
-        if (preferenceManager.getFirstLaunch()) {
-            showOfflineSnackBar(getResources().getString(R.string.offline));
-            statusApp.setText(R.string.first_start_error);
+    void loadOnlineData(Context context){
+        ResultDTObj result = DataTasks.update(context);
+        assert result != null;
+        if (result.getResult().equals("OK")) {
+            courses = result.getCourses();
+            rates = result.getRates();
+            String dateUpdate = result.getDateOfUpdate();
+            PreferenceManager preferenceManager = new PreferenceManager(context);
+            preferenceManager.saveData(courses, rates, dateUpdate);
         } else {
-            if (!sharedPreferences.getString(JSON_COURSES, "").equals("") && !sharedPreferences.getString(JSON_RATES, "").equals("")) {
-                //loadData();
-                startMainActivity();
-            } else {
-                showOfflineSnackBar(getResources().getString(R.string.offline));
-                statusApp.setText(R.string.database_error);
-            }
+            showSnackBar("DATA IS NOT INITIALIZED");
         }
     }
-
-    private void Online() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
-
-        ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
-        if (preferenceManager.getFirstLaunch()) {
-            //downloadData();
-            preferenceManager.FirstLaunchSettings();
-        } else {
-            if (Function.checkTheNeedForAnUpdate(sharedPreferences.getString(LAST_UPDATE_DATETIME, "")) || sharedPreferences.getString(JSON_COURSES, "").equals("") || sharedPreferences.getString(JSON_RATES, "").equals("")) {
-                //downloadData();
-            } else {
-                //loadData();
-            }
-        }
-        startMainActivity();
-    }
-
-    private void runApp() {
-        ConverterPreferenceManager preferenceManager = new ConverterPreferenceManager(getApplicationContext());
-        if (preferenceManager.getFirstLaunch()) {
-            preferenceManager.FirstLaunchSettings();
-        } else {
-
-        }
-    }
-
     private void startMainActivity() {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 Intent main = new Intent(SplashScreenActivity.this, MainActivity.class);
-                ResultDTObj result = DataTasks.getUpdateData(getApplicationContext());
-                if (result.getResult().equals("OK")) {
-                    ArrayList<Courses> courses = result.getCourses();
-                    ArrayList<CurrencyRate> rates = result.getRates();
-                    String dateUpdate = result.getDateOfUpdate();
-                    ConverterPreferenceManager converterPreferenceManager = new ConverterPreferenceManager(getApplicationContext());
-                    converterPreferenceManager.saveCoursesList(courses);
-                    main.putParcelableArrayListExtra(COURSES, courses);
-                    main.putParcelableArrayListExtra(RATES, rates);
-                    startActivity(main);
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                    finish();
-                } else {
-                    showOfflineSnackBar("DATA IS NOT INITIALIZED");
-                }
-
-
+                main.putParcelableArrayListExtra(COURSES, courses);
+                main.putParcelableArrayListExtra(RATES, rates);
+                startActivity(main);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                finish();
             }
-        }, 0);
-
-
+        }, 50);
     }
 
-    private void showOfflineSnackBar(String message) {
+    private void showSnackBar(String message) {
         ViewGroup view = findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar.make(view, Snackbar.LENGTH_INDEFINITE);
         View snackView = snackbar.getView();

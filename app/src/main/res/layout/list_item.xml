@@ -2,15 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="70dp"
+    android:background="?android:attr/selectableItemBackground"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_marginTop="5dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
-    android:layout_marginBottom="5dp">
 
+    android:layout_marginBottom="5dp">
+    <View
+        android:layout_width="10dp"
+        android:layout_height="match_parent"/>
     <TextView
+        android:layout_margin="5dp"
         android:id="@+id/symbol"
         android:layout_weight="1"
         android:layout_width="0dp"
@@ -90,6 +93,10 @@
             android:textAlignment="gravity"
             android:gravity="end|top"
             android:text="@string/value" />
+
     </RelativeLayout>
+    <View
+        android:layout_width="10dp"
+        android:layout_height="match_parent"/>
 </LinearLayout>
 

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Converter</string>
-    <string name="json_str">https://www.cbr-xml-daily.ru/daily_json.js</string>
-    <string name="json_rates">https://www.cbr-xml-daily.ru/latest.js</string>
+    <string name="app_name">Конвертер валют</string>
+    <string name="internet_connection_without_internet">Интернет подключение без доступа к сети интернет</string>
     <string name="first_start_error">Для первого запуска приложения необходимо интернет-соединение</string>
     <string name="database_error">База данных пуста. Необходимо подключение к сети Интернет.</string>
     <string name="_1">1</string>
@@ -42,4 +41,5 @@
     <string name="clipboardstring_3"> по курсу ЦБ РФ от: </string>
     <string name="close">Close</string>
     <string name="sym">SYM</string>
+    <string name="fail_on_update">Выполнить обновление не удалось</string>
 </resources>
